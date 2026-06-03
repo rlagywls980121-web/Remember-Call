@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RememberCall 리멤버콜 · 기억을 지키는 가장 다정한 연결</title>
+<meta name="description" content="자녀의 목소리로 매일 거는 AI 안부 전화. 부모님의 인지 건강을 데이터로 살펴드리는 시니어 케어 서비스, 리멤버콜." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+
+<style>
+  :root{
+    --cream:#F6EFE2; --cream-2:#F0E7D6; --sand:#DBCAAA;
+    --caramel:#C2A275; --caramel-deep:#9E7C4D;
+    --brown:#4A3D2E; --brown-2:#6B5C49; --brown-3:#9E8B72;
+    --white:#FFFFFF; --cta-text:#FBF7EF;
+    --serif-en:'Cormorant Garamond',serif;
+    --serif-ko:'Noto Serif KR',serif;
+    --sans:'Pretendard Variable','Pretendard',-apple-system,sans-serif;
+    --maxw:1120px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--sans);background:var(--cream);color:var(--brown);line-height:1.7;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-weight:500;line-height:1.3;letter-spacing:-0.01em;}
+  .ko-serif{font-family:var(--serif-ko);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+  section{position:relative;}
+  a{color:inherit;text-decoration:none;}
+
+  /* ---- buttons ---- */
+  .btn{display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:500;padding:13px 26px;border-radius:999px;cursor:pointer;border:1px solid transparent;transition:transform .15s ease,background .2s ease;}
+  .btn:active{transform:scale(.97);}
+  .btn-primary{background:var(--caramel-deep);color:var(--cta-text);}
+  .btn-primary:hover{background:#8a6a3e;}
+  .btn-ghost{background:transparent;color:var(--white);border-color:rgba(255,255,255,.8);}
+  .btn-ghost:hover{background:rgba(255,255,255,.12);}
+  .btn-outline{background:transparent;color:var(--caramel-deep);border-color:var(--caramel);}
+  .btn-outline:hover{background:rgba(158,124,77,.08);}
+
+  /* ---- header ---- */
+  header{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(246,239,226,0);transition:background .3s ease,box-shadow .3s ease,padding .3s ease;padding:18px 0;}
+  header.scrolled{background:rgba(246,239,226,.94);backdrop-filter:blur(8px);box-shadow:0 1px 0 rgba(74,61,46,.1);padding:11px 0;}
+  .nav{display:flex;align-items:center;justify-content:space-between;}
+  .logo{display:flex;align-items:baseline;gap:9px;}
+  .logo .en{font-family:var(--serif-en);font-size:25px;font-weight:600;letter-spacing:.5px;color:var(--brown);}
+  .logo .ko{font-size:13px;color:var(--brown-3);}
+  header:not(.scrolled) .logo .en{color:var(--white);}
+  header:not(.scrolled) .logo .ko{color:rgba(255,255,255,.85);}
+  .menu{display:flex;align-items:center;gap:30px;}
+  .menu a.link{font-size:15px;color:var(--brown-2);transition:color .2s;}
+  header:not(.scrolled) .menu a.link{color:rgba(255,255,255,.9);}
+  .menu a.link:hover{color:var(--caramel-deep);}
+  header:not(.scrolled) .menu a.link:hover{color:var(--white);}
+  .hamburger{display:none;background:none;border:none;cursor:pointer;font-size:26px;color:var(--white);}
+  header.scrolled .hamburger{color:var(--brown);}
+
+  /* ---- hero ---- */
+  .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--white);padding:120px 24px 80px;position:relative;overflow:hidden;}
+  .hero-bg{position:absolute;inset:0;z-index:0;
+    background:url('banner.jpeg') center/cover no-repeat;}
+  .hero-overlay{position:absolute;inset:0;z-index:1;background:rgba(45,38,28,.38);}
+  .hero-grain{position:absolute;inset:0;z-index:1;opacity:.06;background-image:radial-gradient(rgba(255,255,255,.8) .5px,transparent .5px);background-size:4px 4px;}
+  .hero-inner{position:relative;z-index:2;max-width:760px;}
+  .brandline{font-family:var(--serif-en);font-size:18px;letter-spacing:5px;color:rgba(255,255,255,.85);margin-bottom:22px;}
+  .brandline .ko{font-family:var(--sans);font-size:12px;letter-spacing:3px;}
+  .hero h1{font-family:var(--serif-ko);font-size:clamp(34px,6vw,58px);color:var(--white);margin-bottom:20px;font-weight:600;}
+  .hero p.sub{font-size:clamp(15px,2.2vw,19px);color:rgba(255,255,255,.92);margin-bottom:34px;}
+  .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .badges{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:30px;}
+  .badge{font-size:13px;color:var(--white);background:rgba(255,255,255,.16);padding:6px 14px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;}
+  .scroll-hint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:2;color:rgba(255,255,255,.7);font-size:24px;animation:bob 2s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translate(-50%,0);}50%{transform:translate(-50%,8px);}}
+
+  /* ---- generic section ---- */
+  .sec{padding:96px 0;}
+  .sec.alt{background:var(--cream-2);}
+  .eyebrow{font-family:var(--serif-en);font-size:15px;letter-spacing:3px;color:var(--caramel-deep);text-align:center;margin-bottom:10px;}
+  .sec h2{font-family:var(--serif-ko);font-size:clamp(26px,4vw,38px);text-align:center;color:var(--brown);margin-bottom:14px;}
+  .sec .lead{text-align:center;color:var(--brown-2);font-size:16px;max-width:560px;margin:0 auto 52px;}
+
+  /* ---- steps ---- */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+  .step{background:var(--white);border:1px solid rgba(74,61,46,.1);border-radius:18px;padding:30px 22px;text-align:center;transition:transform .25s ease,box-shadow .25s ease;}
+  .step:hover{transform:translateY(-6px);box-shadow:0 14px 30px rgba(74,61,46,.1);}
+  .step .ico{width:54px;height:54px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--caramel-deep);font-size:26px;}
+  .step .num{font-family:var(--serif-en);color:var(--caramel);font-size:18px;margin-bottom:4px;}
+  .step h3{font-size:17px;margin-bottom:6px;}
+  .step p{font-size:14px;color:var(--brown-2);}
+
+  /* ---- features ---- */
+  .features{display:flex;flex-direction:column;gap:18px;max-width:880px;margin:0 auto;}
+  .feature{display:flex;gap:22px;align-items:center;background:var(--white);border-radius:18px;padding:26px 30px;border:1px solid rgba(74,61,46,.08);}
+  .feature .ico{flex-shrink:0;width:56px;height:56px;border-radius:14px;background:var(--cream);display:flex;align-items:center;justify-content:center;color:var(--caramel-deep);font-size:28px;}
+  .feature h3{font-size:19px;margin-bottom:5px;}
+  .feature p{font-size:15px;color:var(--brown-2);}
+  .feature .chart{flex-shrink:0;display:flex;align-items:flex-end;gap:5px;width:128px;height:60px;background:var(--cream);border-radius:10px;padding:10px;}
+  .feature .chart span{flex:1;background:var(--caramel);border-radius:3px;}
+
+  /* ---- trust ---- */
+  .trust-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:880px;margin:0 auto;}
+  .tcard{background:var(--white);border:1px solid rgba(74,61,46,.1);border-radius:18px;padding:30px 24px;text-align:center;}
+  .tcard .ico{font-size:30px;color:var(--caramel-deep);margin-bottom:14px;}
+  .tcard h3{font-size:16px;margin-bottom:6px;}
+  .tcard p{font-size:14px;color:var(--brown-2);}
+
+  /* ---- pricing ---- */
+  .plans{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;max-width:680px;margin:0 auto;}
+  .plan{background:var(--white);border:1px solid rgba(74,61,46,.14);border-radius:20px;padding:34px 28px;text-align:center;position:relative;}
+  .plan.featured{border:2px solid var(--caramel-deep);}
+  .plan .tag{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:12px;background:var(--caramel-deep);color:var(--cta-text);padding:5px 16px;border-radius:999px;}
+  .plan .label{font-size:15px;color:var(--brown-2);margin-bottom:8px;}
+  .plan .price{font-family:var(--serif-ko);font-size:32px;color:var(--brown);margin-bottom:6px;font-weight:600;}
+  .plan .price small{font-size:15px;font-family:var(--sans);color:var(--brown-2);font-weight:400;}
+  .plan ul{list-style:none;margin:18px 0 24px;}
+  .plan li{font-size:14px;color:var(--brown-2);padding:5px 0;}
+  .plan .btn{width:100%;justify-content:center;}
+
+  /* ---- faq ---- */
+  .faq{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:12px;}
+  .qa{background:var(--white);border:1px solid rgba(74,61,46,.1);border-radius:14px;overflow:hidden;}
+  .qa button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;background:none;border:none;cursor:pointer;padding:18px 22px;font-size:16px;color:var(--brown);text-align:left;font-family:var(--sans);}
+  .qa button .ti{color:var(--caramel-deep);transition:transform .25s ease;flex-shrink:0;}
+  .qa.open button .ti{transform:rotate(180deg);}
+  .qa .ans{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+  .qa .ans p{padding:0 22px 20px;font-size:15px;color:var(--brown-2);}
+
+  /* ---- signup ---- */
+  .signup{background:var(--cream-2);}
+  .form-card{max-width:460px;margin:0 auto;background:var(--white);border:1px solid rgba(74,61,46,.1);border-radius:22px;padding:40px 34px;}
+  .form-card h2{font-size:26px;margin-bottom:6px;text-align:center;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:14px;color:var(--brown);margin-bottom:6px;}
+  .field input{width:100%;padding:12px 14px;font-size:15px;font-family:var(--sans);border:1px solid rgba(74,61,46,.2);border-radius:10px;background:var(--cream);color:var(--brown);transition:border .2s;}
+  .field input:focus{outline:none;border-color:var(--caramel-deep);}
+  .agree{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--brown-2);margin:6px 0 18px;cursor:pointer;}
+  .agree input{width:17px;height:17px;accent-color:var(--caramel-deep);}
+  .form-msg{display:none;text-align:center;background:var(--cream);border-radius:12px;padding:18px;color:var(--brown);font-size:15px;margin-top:14px;}
+
+  /* ---- footer ---- */
+  footer{background:var(--sand);padding:54px 0 36px;}
+  .foot-logo .en{font-family:var(--serif-en);font-size:26px;font-weight:600;color:var(--brown);letter-spacing:.5px;}
+  .foot-tag{font-size:13px;color:var(--brown-2);margin:6px 0 26px;}
+  .foot-links{display:flex;gap:26px;flex-wrap:wrap;margin-bottom:22px;}
+  .foot-links a{font-size:14px;color:var(--brown);}
+  .foot-links a:hover{color:var(--caramel-deep);}
+  .foot-legal{border-top:1px solid rgba(74,61,46,.22);padding-top:18px;display:flex;gap:20px;flex-wrap:wrap;}
+  .foot-legal a,.foot-legal span{font-size:13px;color:var(--brown-2);}
+
+  /* ---- reveal animation ---- */
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease;}
+  .reveal.in{opacity:1;transform:none;}
+  .hero .hero-inner > *{opacity:0;transform:translateY(20px);animation:rise .9s ease forwards;}
+  .hero .brandline{animation-delay:.1s;}
+  .hero h1{animation-delay:.25s;}
+  .hero p.sub{animation-delay:.4s;}
+  .hero-cta{animation-delay:.55s;}
+  .badges{animation-delay:.7s;}
+  @keyframes rise{to{opacity:1;transform:none;}}
+
+  /* ---- mobile ---- */
+  @media(max-width:860px){
+    .steps{grid-template-columns:repeat(2,1fr);}
+    .trust-grid{grid-template-columns:1fr;}
+    .plans{grid-template-columns:1fr;}
+    .feature{flex-wrap:wrap;}
+    .feature .chart{display:none;}
+    .hamburger{display:block;}
+    .menu{position:absolute;top:100%;right:16px;flex-direction:column;align-items:flex-start;gap:14px;background:var(--white);border-radius:16px;padding:22px 26px;box-shadow:0 12px 30px rgba(74,61,46,.16);display:none;}
+    .menu.show{display:flex;}
+    .menu a.link{color:var(--brown-2) !important;}
+    .menu .btn{width:100%;justify-content:center;}
+  }
+</style>
+</head>
+<body>
+
+<header id="header">
+  <div class="wrap nav">
+    <a href="#top" class="logo">
+      <span class="en">RememberCall</span>
+      <span class="ko">리멤버콜</span>
+    </a>
+    <nav class="menu" id="menu">
+      <a class="link" href="#how">작동원리</a>
+      <a class="link" href="#features">기능</a>
+      <a class="link" href="#trust">안심·보안</a>
+      <a class="link" href="#pricing">요금제</a>
+      <a class="btn btn-primary" href="#signup">무료로 시작하기</a>
+    </nav>
+    <button class="hamburger" id="hamburger" aria-label="메뉴 열기"><i class="ti ti-menu-2"></i></button>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-grain"></div>
+  <!-- 가족 사진/통화 영상을 쓰려면 위 .hero-bg 의 background 를 url('your-photo.jpg') center/cover 로 바꾸세요 -->
+  <div class="hero-inner">
+    <p class="brandline">RememberCall <span class="ko">· 리멤버콜</span></p>
+    <h1>기억을 지키는<br>가장 다정한 연결</h1>
+    <p class="sub">자녀의 목소리로 매일 거는 AI 안부 전화<br>부모님의 인지 건강을 데이터로 살펴드려요</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#signup">무료로 시작하기</a>
+      <a class="btn btn-ghost" href="#how"><i class="ti ti-player-play"></i> 서비스 둘러보기</a>
+    </div>
+    <div class="badges">
+      <span class="badge"><i class="ti ti-check"></i> 지자체 160곳 검증된 방식</span>
+      <span class="badge"><i class="ti ti-lock"></i> 녹음 즉시 파기</span>
+    </div>
+  </div>
+  <a href="#how" class="scroll-hint" aria-label="아래로"><i class="ti ti-chevron-down"></i></a>
+</section>
+
+<section class="sec" id="how">
+  <div class="wrap">
+    <p class="eyebrow reveal">HOW IT WORKS</p>
+    <h2 class="reveal">단 한 번 녹음하면, 매일 이어집니다</h2>
+    <p class="lead reveal">자녀는 처음 한 번만 준비하면, 그다음은 리멤버콜이 매일 알아서 부모님께 전화를 겁니다.</p>
+    <div class="steps">
+      <div class="step reveal"><div class="ico"><i class="ti ti-microphone"></i></div><p class="num">01</p><h3>목소리 녹음</h3><p>자녀가 1분 분량 가이드를 낭독해 목소리를 등록합니다.</p></div>
+      <div class="step reveal"><div class="ico"><i class="ti ti-heart"></i></div><p class="num">02</p><h3>추억 입력</h3><p>고향·직장·기념일 같은 가족의 추억을 등록합니다.</p></div>
+      <div class="step reveal"><div class="ico"><i class="ti ti-phone"></i></div><p class="num">03</p><h3>매일 전화</h3><p>약속한 시간에 자녀 목소리로 안부 전화를 자동 발신합니다.</p></div>
+      <div class="step reveal"><div class="ico"><i class="ti ti-chart-bar"></i></div><p class="num">04</p><h3>리포트 확인</h3><p>통화를 분석한 인지 건강 리포트를 앱에서 확인합니다.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec alt" id="features">
+  <div class="wrap">
+    <p class="eyebrow reveal">FEATURES</p>
+    <h2 class="reveal">안부 전화 속에, 케어가 숨어 있습니다</h2>
+    <p class="lead reveal">부모님께는 다정한 통화, 그 뒤에서는 가장 정밀한 인지 케어가 이루어집니다.</p>
+    <div class="features">
+      <div class="feature reveal">
+        <div class="ico"><i class="ti ti-microphone-2"></i></div>
+        <div><h3>자녀 목소리 AI 통화</h3><p>차가운 기계음이 아닌, 자녀의 목소리로 매일 다정하게 안부를 전합니다.</p></div>
+      </div>
+      <div class="feature reveal">
+        <div class="ico"><i class="ti ti-message-heart"></i></div>
+        <div><h3>추억 기반 대화 퀴즈</h3><p>가족의 실제 추억으로 자연스러운 대화를 나누며 부모님의 기억을 자극합니다.</p></div>
+      </div>
+      <div class="feature reveal">
+        <div class="ico"><i class="ti ti-activity-heartbeat"></i></div>
+        <div style="flex:1"><h3>인지 건강 대시보드</h3><p>답변 지연·망설임을 분석해 위험 신호를 자녀에게 알립니다.</p></div>
+        <div class="chart"><span style="height:40%"></span><span style="height:65%"></span><span style="height:50%"></span><span style="height:82%;background:var(--caramel-deep)"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="trust">
+  <div class="wrap">
+    <p class="eyebrow reveal">SECURITY</p>
+    <h2 class="reveal">목소리는, 안전하게 지켜집니다</h2>
+    <p class="lead reveal">“내 목소리가 악용되면 어쩌지?” — 그 걱정부터 해결했습니다.</p>
+    <div class="trust-grid">
+      <div class="tcard reveal"><div class="ico"><i class="ti ti-trash"></i></div><h3>녹음 원본 즉시 파기</h3><p>AI 음성 생성 직후 원본은 영구 삭제됩니다.</p></div>
+      <div class="tcard reveal"><div class="ico"><i class="ti ti-key"></i></div><h3>일회성 토큰 인증</h3><p>매 통화마다 새로운 보안 인증을 거칩니다.</p></div>
+      <div class="tcard reveal"><div class="ico"><i class="ti ti-arrow-narrow-right"></i></div><h3>단방향 발신 구조</h3><p>외부에서 호출할 수 없는 폐쇄형으로 운영됩니다.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec alt" id="pricing">
+  <div class="wrap">
+    <p class="eyebrow reveal">PRICING</p>
+    <h2 class="reveal">부담 없이 시작해 보세요</h2>
+    <p class="lead reveal">첫 7일은 무료입니다. 언제든 해지할 수 있어요.</p>
+    <div class="plans">
+      <div class="plan reveal">
+        <p class="label">월간 구독</p>
+        <p class="price">19,900<small>원 / 월</small></p>
+        <ul><li>매일 안부 전화</li><li>인지 건강 리포트</li><li>위험 알림</li></ul>
+        <a class="btn btn-outline" href="#signup">시작하기</a>
+      </div>
+      <div class="plan featured reveal">
+        <span class="tag">가장 인기</span>
+        <p class="label">연간 구독</p>
+        <p class="price">14,900<small>원 / 월</small></p>
+        <ul><li>월간 대비 25% 할인</li><li>첫 7일 무료 체험</li><li>모든 기능 포함</li></ul>
+        <a class="btn btn-primary" href="#signup">무료로 시작하기</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="faq">
+  <div class="wrap">
+    <p class="eyebrow reveal">FAQ</p>
+    <h2 class="reveal" style="margin-bottom:44px;">자주 묻는 질문</h2>
+    <div class="faq">
+      <div class="qa reveal"><button>부모님도 앱을 설치해야 하나요? <i class="ti ti-chevron-down"></i></button><div class="ans"><p>아니요. 부모님은 평소처럼 걸려온 전화를 받기만 하면 됩니다. 앱 설치나 가입이 전혀 필요 없어요. 앱은 자녀분만 사용합니다.</p></div></div>
+      <div class="qa reveal"><button>통화를 거부하시면 어떻게 되나요? <i class="ti ti-chevron-down"></i></button><div class="ans"><p>받지 않으시면 정해진 규칙에 따라 잠시 후 다시 안내드리며, 연결되지 않은 기록도 자녀 앱에 표시되어 안부를 확인하실 수 있습니다.</p></div></div>
+      <div class="qa reveal"><button>제 목소리는 안전하게 보관되나요? <i class="ti ti-chevron-down"></i></button><div class="ans"><p>녹음 원본은 AI 음성 생성 직후 영구 삭제되고, 통화마다 일회성 보안 인증을 거칩니다. 외부에서 호출할 수 없는 단방향 구조라 사칭에 악용될 수 없습니다.</p></div></div>
+      <div class="qa reveal"><button>요금은 어떻게 결제하나요? <i class="ti ti-chevron-down"></i></button><div class="ans"><p>월간·연간 구독 중 선택할 수 있고, 첫 7일은 무료입니다. 무료 기간 안에는 언제든 부담 없이 해지할 수 있어요.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec signup" id="signup">
+  <div class="wrap">
+    <div class="form-card reveal">
+      <h2 class="ko-serif">7일 무료로 시작하기</h2>
+      <p style="text-align:center;color:var(--brown-2);font-size:14px;margin-bottom:26px;">정보를 남겨주시면 시작 안내를 보내드려요.</p>
+      <form id="signupForm">
+        <div class="field"><label>신청자(자녀) 이름</label><input type="text" name="name" placeholder="홍길동" required /></div>
+        <div class="field"><label>연락처</label><input type="tel" name="phone" placeholder="010-0000-0000" required /></div>
+        <div class="field"><label>이메일</label><input type="email" name="email" placeholder="name@email.com" required /></div>
+        <label class="agree"><input type="checkbox" required /> 이용약관 및 개인정보처리방침에 동의합니다</label>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">신청 완료하기</button>
+      </form>
+      <div class="form-msg" id="formMsg"><i class="ti ti-circle-check" style="color:var(--caramel-deep);font-size:22px;"></i><br>신청이 접수되었어요. 곧 안내 메일을 보내드릴게요!</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-logo"><span class="en">RememberCall</span></div>
+    <p class="foot-tag">리멤버콜 · 기억을 지키는 가장 다정한 연결 · Since 2026</p>
+    <div class="foot-links">
+      <a href="#how">서비스 소개</a><a href="#features">작동 원리</a><a href="#pricing">요금제</a><a href="#trust">안심·보안</a>
+    </div>
+    <div class="foot-legal">
+      <a href="terms.html">이용약관</a><a href="terms.html">개인정보처리방침</a><span>고객센터 help@remembercall.kr</span><span>© 2026 RememberCall</span>
+    </div>
+  </div>
+</footer>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css" />
+<script>
+  var header=document.getElementById('header');
+  window.addEventListener('scroll',function(){
+    if(window.scrollY>40)header.classList.add('scrolled');else header.classList.remove('scrolled');
+  });
+
+  var hb=document.getElementById('hamburger'),menu=document.getElementById('menu');
+  hb.addEventListener('click',function(){menu.classList.toggle('show');});
+  menu.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){menu.classList.remove('show');});});
+
+  document.querySelectorAll('.qa button').forEach(function(b){
+    b.addEventListener('click',function(){
+      var qa=b.parentElement,ans=qa.querySelector('.ans');
+      var open=qa.classList.contains('open');
+      document.querySelectorAll('.qa').forEach(function(x){x.classList.remove('open');x.querySelector('.ans').style.maxHeight=null;});
+      if(!open){qa.classList.add('open');ans.style.maxHeight=ans.scrollHeight+'px';}
+    });
+  });
+
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{threshold:.15});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+
+  document.getElementById('signupForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    this.style.display='none';
+    document.getElementById('formMsg').style.display='block';
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>리멤버 콜 · 자녀용 앱</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css" />
+<style>
+  :root{
+    --cream:#F6EFE2; --cream-2:#F0E7D6; --sand:#DBCAAA;
+    --caramel:#C2A275; --caramel-deep:#9E7C4D; --caramel-d2:#8A6A3E;
+    --brown:#4A3D2E; --brown-2:#6B5C49; --brown-3:#9E8B72;
+    --white:#FFFFFF; --cta-text:#FBF7EF;
+    --alert-bg:#F3E0DA; --alert:#B5563C; --alert-text:#8E4430;
+    --serif:'Cormorant Garamond',serif;
+    --sans:'Pretendard Variable','Pretendard',-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:var(--sans);background:#3A2E25;color:var(--brown);line-height:1.6;display:flex;justify-content:center;min-height:100vh;}
+  .device{width:390px;max-width:100vw;min-height:100vh;background:var(--cream);position:relative;overflow:hidden;box-shadow:0 0 60px rgba(0,0,0,.4);}
+  .screen{display:none;flex-direction:column;min-height:100vh;animation:fade .4s ease;}
+  .screen.active{display:flex;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  .statusbar{display:flex;justify-content:space-between;align-items:center;padding:12px 22px 4px;font-size:12px;color:var(--brown-2);flex-shrink:0;}
+
+  .btn{display:block;width:100%;text-align:center;border:none;cursor:pointer;font-family:var(--sans);font-size:16px;font-weight:500;padding:15px;border-radius:16px;background:var(--caramel-deep);color:var(--cta-text);transition:transform .12s,background .2s;}
+  .btn:active{transform:scale(.98);}
+  .btn-outline{background:var(--white);color:var(--caramel-deep);border:1px solid var(--caramel);}
+
+  #splash{background:#1E1712;justify-content:center;align-items:center;text-align:center;}
+  #splash .logo{width:210px;animation:rise 1s ease both;}
+  #splash .tag{font-size:13px;color:#B89A6E;margin-top:6px;animation:rise 1s ease .25s both;}
+  #splash .enter{position:absolute;bottom:54px;left:0;right:0;color:#E4C089;font-size:13px;animation:pulse 2s ease-in-out infinite;cursor:pointer;}
+  @keyframes rise{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+  @keyframes pulse{0%,100%{opacity:.4;}50%{opacity:1;}}
+
+  .ob{flex:1;display:flex;flex-direction:column;padding:8px 28px 32px;}
+  .ob .skip{text-align:right;font-size:13px;color:var(--brown-3);cursor:pointer;min-height:20px;}
+  .ob .art{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+  .ob .art svg{width:190px;}
+  .ob h2{font-size:24px;color:var(--brown);font-weight:600;line-height:1.35;margin-top:20px;}
+  .ob p{font-size:15px;color:var(--brown-2);margin-top:12px;}
+  .dots{display:flex;gap:7px;justify-content:center;margin:18px 0;}
+  .dots span{width:7px;height:7px;border-radius:50%;background:#D8C9AD;transition:.3s;}
+  .dots span.on{width:22px;border-radius:5px;background:var(--caramel-deep);}
+
+  .header{display:flex;align-items:center;justify-content:space-between;padding:6px 20px 14px;border-bottom:1px solid rgba(74,61,46,.1);flex-shrink:0;}
+  .header .brand{display:flex;align-items:center;gap:9px;}
+  .header .brand img{height:30px;}
+  .header .brand span{font-family:var(--serif);font-size:18px;color:var(--brown);letter-spacing:.5px;}
+  .header .bell{font-size:20px;color:var(--brown-2);position:relative;cursor:pointer;}
+  .header .bell.dot::after{content:"";position:absolute;top:0;right:0;width:7px;height:7px;background:var(--alert);border-radius:50%;}
+
+  .body{flex:1;overflow-y:auto;padding:18px 20px 90px;}
+  .hello{font-size:13px;color:var(--brown-3);}
+  .htitle{font-size:21px;color:var(--brown);font-weight:600;margin:2px 0 16px;}
+
+  .card{background:var(--white);border:1px solid rgba(74,61,46,.1);border-radius:18px;padding:16px;margin-bottom:13px;}
+  .card-dark{background:var(--caramel-deep);border:none;color:var(--cta-text);}
+  .journey-bars{display:flex;gap:5px;margin-top:10px;}
+  .journey-bars span{flex:1;height:7px;border-radius:4px;background:#C9B690;}
+  .journey-bars span.done{background:var(--cta-text);}
+  .row{display:flex;align-items:center;justify-content:space-between;}
+  .metrics{display:flex;justify-content:space-between;text-align:center;}
+  .metrics .m p:first-child{font-size:11px;color:var(--brown-3);}
+  .metrics .m p:last-child{font-size:20px;color:var(--brown);font-weight:600;margin-top:2px;}
+  .alert-card{background:var(--alert-bg);border:none;display:flex;gap:10px;align-items:center;cursor:pointer;}
+  .alert-card i{color:var(--alert);font-size:20px;}
+  .alert-card p{font-size:13px;color:var(--alert-text);font-weight:500;}
+
+  .sub{font-size:12px;color:var(--brown-3);margin-bottom:8px;font-weight:500;}
+  .metric-line{margin-bottom:6px;}
+  .bar{height:6px;background:var(--cream-2);border-radius:3px;overflow:hidden;margin-top:5px;}
+  .bar > div{height:100%;background:var(--caramel-deep);border-radius:3px;}
+  .tag-pill{font-size:11px;padding:3px 10px;border-radius:999px;display:inline-block;}
+  .pill-warn{background:var(--alert-bg);color:var(--alert-text);}
+  .pill-ok{background:var(--cream-2);color:var(--brown-2);}
+
+  .chart{display:flex;align-items:flex-end;gap:7px;height:120px;margin:14px 0 6px;}
+  .chart .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;}
+  .chart .col .b{width:100%;background:var(--caramel);border-radius:5px 5px 0 0;}
+  .chart .col .b.peak{background:var(--caramel-deep);}
+  .chart .col small{font-size:10px;color:var(--brown-3);}
+  .seg{display:flex;gap:7px;background:var(--cream-2);border-radius:12px;padding:4px;margin-bottom:14px;}
+  .seg button{flex:1;border:none;background:transparent;font-family:var(--sans);font-size:13px;color:var(--brown-2);padding:8px;border-radius:9px;cursor:pointer;}
+  .seg button.on{background:var(--caramel-deep);color:var(--cta-text);font-weight:500;}
+
+  .back{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--brown-2);cursor:pointer;margin-bottom:10px;}
+
+  /* calendar */
+  .cal{background:var(--white);border:1px solid rgba(74,61,46,.1);border-radius:18px;padding:16px;margin-bottom:14px;}
+  .cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:14px;color:var(--brown);font-weight:600;}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;}
+  .cal-grid .dow{font-size:10px;color:var(--brown-3);padding:2px 0;}
+  .cal-grid .day{font-size:12px;color:var(--brown);padding:6px 0;border-radius:9px;cursor:pointer;position:relative;}
+  .cal-grid .day.has{background:var(--cream-2);}
+  .cal-grid .day.warn{background:var(--alert-bg);color:var(--alert-text);font-weight:600;}
+  .cal-grid .day.mute{color:#CFC2AC;}
+  /* list item */
+  .litem{background:var(--white);border:1px solid rgba(74,61,46,.1);border-radius:14px;padding:13px 15px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+  .litem:active{background:var(--cream-2);}
+  .litem .d{font-size:14px;color:var(--brown);font-weight:500;}
+  .litem .s{font-size:11px;color:var(--brown-3);margin-top:1px;}
+
+  /* form */
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:13px;color:var(--brown);margin-bottom:6px;}
+  .field input,.field select{width:100%;padding:12px 14px;font-size:15px;font-family:var(--sans);border:1px solid rgba(74,61,46,.2);border-radius:11px;background:var(--white);color:var(--brown);}
+  .field input:focus{outline:none;border-color:var(--caramel-deep);}
+
+  /* record */
+  .rec{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .rec .wave{display:flex;align-items:center;gap:3px;height:36px;margin-bottom:18px;}
+  .rec .wave span{width:3px;border-radius:2px;background:var(--caramel);}
+  .rec .mic{width:74px;height:74px;border-radius:50%;background:var(--caramel-deep);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 10px 24px rgba(158,124,77,.35);}
+  .rec .mic i{color:var(--cta-text);font-size:32px;}
+  .secure{font-size:11px;color:var(--brown-3);text-align:center;margin-top:8px;}
+
+  /* toggle */
+  .setrow{display:flex;align-items:center;justify-content:space-between;padding:15px 16px;background:var(--white);border:1px solid rgba(74,61,46,.1);border-radius:14px;margin-bottom:9px;cursor:pointer;}
+  .setrow .l{display:flex;align-items:center;gap:11px;font-size:14px;color:var(--brown);}
+  .setrow .l i{color:var(--caramel-deep);font-size:19px;}
+  .toggle{width:42px;height:24px;border-radius:999px;background:var(--caramel-deep);position:relative;flex-shrink:0;}
+  .toggle.off{background:#D5C7AE;}
+  .toggle::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s;}
+  .toggle.on::after{left:21px;}
+
+  /* day toggles */
+  .days{display:flex;gap:6px;justify-content:space-between;}
+  .days span{flex:1;text-align:center;font-size:13px;padding:9px 0;border-radius:10px;background:var(--cream-2);color:var(--brown-2);cursor:pointer;}
+  .days span.on{background:var(--caramel-deep);color:var(--cta-text);font-weight:600;}
+  .timepick{text-align:center;font-family:var(--serif);font-size:40px;color:var(--brown);font-weight:600;padding:10px 0;}
+
+  /* share */
+  .share-opt{display:flex;align-items:center;gap:13px;padding:15px 16px;background:var(--white);border:1px solid rgba(74,61,46,.1);border-radius:14px;margin-bottom:10px;cursor:pointer;}
+  .share-opt i{color:var(--caramel-deep);font-size:21px;}
+  .share-opt .t{font-size:14px;color:var(--brown);font-weight:500;}
+  .share-opt .d{font-size:11px;color:var(--brown-3);}
+
+  .tabbar{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-around;align-items:center;background:var(--cta-text);border-top:1px solid rgba(74,61,46,.1);padding:10px 0 14px;}
+  .tabbar button{border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--brown-3);font-family:var(--sans);cursor:pointer;}
+  .tabbar button i{font-size:21px;}
+  .tabbar button.on{color:var(--caramel-deep);}
+
+  /* memory bottom sheet */
+  .sheet-backdrop{position:absolute;inset:0;z-index:100;background:rgba(45,38,28,.45);display:none;align-items:flex-end;}
+  .sheet-backdrop.open{display:flex;}
+  .sheet{background:var(--white);border-radius:22px 22px 0 0;padding:20px 20px 34px;width:100%;animation:slideUp .3s ease;}
+  @keyframes slideUp{from{transform:translateY(100%);}to{transform:none;}}
+  .sheet-handle{width:36px;height:4px;background:var(--sand);border-radius:2px;margin:0 auto 18px;}
+  .sheet-title{font-size:17px;font-weight:600;color:var(--brown);margin-bottom:16px;}
+  .field select{outline:none;}
+  .field select:focus{border-color:var(--caramel-deep);}
+  .del-btn{background:none;border:none;color:var(--alert);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:4px;padding:8px 0;margin-bottom:6px;font-family:var(--sans);}
+  .add-mem{border:1.5px dashed var(--caramel);border-radius:14px;padding:14px;text-align:center;color:var(--caramel-deep);font-size:14px;cursor:pointer;margin-top:4px;}
+  .add-mem:active{background:var(--cream-2);}
+</style>
+</head>
+<body>
+<div class="device">
+
+  <!-- SPLASH (원본 로고 그대로) -->
+  <section class="screen" id="splash">
+    <img class="logo" src="logo.png" alt="리멤버 콜" />
+    <p class="tag">기억을 지키는 가장 다정한 연결</p>
+    <p class="enter" onclick="go('ob1')">화면을 눌러 시작하기</p>
+  </section>
+
+  <!-- ONBOARDING 1 -->
+  <section class="screen" id="ob1">
+    <div class="statusbar"><span>9:41</span><span><i class="ti ti-wifi"></i> <i class="ti ti-battery-3"></i></span></div>
+    <div class="ob">
+      <p class="skip" onclick="skipOnboarding()">건너뛰기</p>
+      <div class="art">
+        <svg viewBox="0 0 160 150" role="img" aria-label="자녀 목소리로 거는 안부 전화">
+          <circle cx="80" cy="72" r="62" fill="#F0E4C9"/>
+          <rect x="58" y="34" width="44" height="76" rx="12" fill="#9E7C4D"/>
+          <rect x="63" y="42" width="34" height="56" rx="6" fill="#FBF3E4"/>
+          <path d="M80 88 C72 82 70 77 73.5 73.5 C76.3 71 80 73 80 76 C80 73 83.7 71 86.5 73.5 C90 77 88 82 80 88 Z" fill="#C25B43"/>
+          <path d="M104 58 a16 16 0 0 1 0 28" fill="none" stroke="#C2A275" stroke-width="3.2" stroke-linecap="round"/>
+          <path d="M110 50 a26 26 0 0 1 0 44" fill="none" stroke="#DBCAAA" stroke-width="3.2" stroke-linecap="round"/>
+        </svg>
+        <h2>자녀의 목소리로<br>매일 안부 전화</h2>
+        <p>한 번만 녹음하면, 매일 약속한 시간에<br>부모님께 다정한 전화를 걸어드려요</p>
+      </div>
+      <div class="dots"><span class="on"></span><span></span><span></span></div>
+      <button class="btn" onclick="go('ob2')">다음</button>
+    </div>
+  </section>
+
+  <!-- ONBOARDING 2 -->
+  <section class="screen" id="ob2">
+    <div class="statusbar"><span>9:41</span><span><i class="ti ti-wifi"></i> <i class="ti ti-battery-3"></i></span></div>
+    <div class="ob">
+      <p class="skip" onclick="skipOnboarding()">건너뛰기</p>
+      <div class="art">
+        <svg viewBox="0 0 160 150" role="img" aria-label="통화 음성을 분석해 그래프로 보여줌">
+          <circle cx="80" cy="72" r="62" fill="#F0E4C9"/>
+          <rect x="40" y="44" width="80" height="58" rx="10" fill="#FBF3E4" stroke="#E4D3B0" stroke-width="1.5"/>
+          <rect x="52" y="78" width="9" height="16" rx="2" fill="#DBCAAA"/>
+          <rect x="66" y="70" width="9" height="24" rx="2" fill="#C2A275"/>
+          <rect x="80" y="62" width="9" height="32" rx="2" fill="#9E7C4D"/>
+          <polyline points="56,68 70,60 84,52 96,48" fill="none" stroke="#C25B43" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="96" cy="48" r="3.2" fill="#C25B43"/>
+          <circle cx="103" cy="92" r="13" fill="none" stroke="#9E7C4D" stroke-width="3"/>
+          <line x1="112" y1="101" x2="120" y2="109" stroke="#9E7C4D" stroke-width="3.4" stroke-linecap="round"/>
+        </svg>
+        <h2>통화만으로<br>인지 건강 체크</h2>
+        <p>답변 속도와 기억력을 분석해<br>쉬운 리포트로 보여드려요</p>
+      </div>
+      <div class="dots"><span></span><span class="on"></span><span></span></div>
+      <button class="btn" onclick="go('ob3')">다음</button>
+    </div>
+  </section>
+
+  <!-- ONBOARDING 3 -->
+  <section class="screen" id="ob3">
+    <div class="statusbar"><span>9:41</span><span><i class="ti ti-wifi"></i> <i class="ti ti-battery-3"></i></span></div>
+    <div class="ob">
+      <p class="skip">&nbsp;</p>
+      <div class="art">
+        <svg viewBox="0 0 160 150" role="img" aria-label="변화가 감지되면 알림을 보냄">
+          <circle cx="80" cy="72" r="62" fill="#F0E4C9"/>
+          <path d="M80 38 C66 38 58 48 58 62 C58 80 50 86 50 86 L110 86 C110 86 102 80 102 62 C102 48 94 38 80 38 Z" fill="#9E7C4D"/>
+          <rect x="50" y="84" width="60" height="6" rx="3" fill="#8A6A3E"/>
+          <path d="M73 94 a8 8 0 0 0 14 0 Z" fill="#8A6A3E"/>
+          <circle cx="100" cy="48" r="11" fill="#C25B43"/>
+          <path d="M100 43 v6 M100 53 v0.5" stroke="#FBF3E4" stroke-width="2.6" stroke-linecap="round"/>
+        </svg>
+        <h2>변화가 보이면<br>바로 알려드려요</h2>
+        <p>정밀 검진이 필요한 신호를<br>가장 먼저 보내드릴게요</p>
+      </div>
+      <div class="dots"><span></span><span></span><span class="on"></span></div>
+      <button class="btn" onclick="go('voice')">시작하기</button>
+    </div>
+  </section>
+
+  <!-- VOICE RECORDING (온보딩 후 등록) -->
+  <section class="screen" id="voice">
+    <div class="statusbar"><span>9:41</span><span><i class="ti ti-wifi"></i> <i class="ti ti-battery-3"></i></span></div>
+    <div class="body" style="display:flex;flex-direction:column;padding-bottom:24px;">
+      <p class="back" onclick="go('me')"><i class="ti ti-arrow-left"></i> 뒤로</p>
+      <p class="htitle">목소리 등록</p>
+      <p class="sub">아래 문장을 편하게 읽어주세요</p>
+      <div class="card" style="background:var(--cream-2);border:none;">
+        <p style="font-size:14px;color:var(--brown);line-height:1.7;margin:0;">"엄마, 저예요. 오늘 하루는 어떻게 보내셨어요? 식사는 잘 챙겨 드셨죠?"</p>
+      </div>
+      <div class="rec">
+        <div class="wave">
+          <span style="height:40%"></span><span style="height:75%"></span><span style="height:55%;background:var(--caramel-deep)"></span><span style="height:100%;background:var(--caramel-deep)"></span><span style="height:60%"></span><span style="height:35%"></span><span style="height:70%;background:var(--caramel-deep)"></span>
+        </div>
+        <div class="mic" onclick="alert('녹음 중… (프로토타입)')"><i class="ti ti-microphone"></i></div>
+        <p style="font-size:12px;color:var(--brown-3);margin-top:9px;">탭하여 녹음</p>
+      </div>
+      <p class="secure"><i class="ti ti-lock"></i> 녹음 원본은 음성 생성 직후 즉시 파기됩니다</p>
+      <button class="btn" style="margin-top:14px;" onclick="go('history')">녹음 완료</button>
+    </div>
+  </section>
+
+  <!-- FAMILY HISTORY -->
+  <section class="screen" id="history">
+    <div class="statusbar"><span>9:41</span><span><i class="ti ti-wifi"></i> <i class="ti ti-battery-3"></i></span></div>
+    <div class="body">
+      <p class="back" onclick="go('me')"><i class="ti ti-arrow-left"></i> 뒤로</p>
+      <p class="htitle">가족 추억</p>
+      <p class="sub">통화 퀴즈에 쓰일 추억을 등록해요</p>
+      <div id="memory-list"></div>
+      <div class="add-mem" onclick="openSheet()"><i class="ti ti-plus"></i> 추억 추가하기</div>
+      <button class="btn" style="margin-top:16px;" onclick="go('schedule')">다음</button>
+    </div>
+  </section>
+
+  <!-- CALL SCHEDULE -->
+  <section class="screen" id="schedule">
+    <div class="statusbar"><span>9:41</span><span><i class="ti ti-wifi"></i> <i class="ti ti-battery-3"></i></span></div>
+    <div class="body">
+      <p class="back" onclick="go('me')"><i class="ti ti-arrow-left"></i> 뒤로</p>
+      <p class="htitle">통화 스케줄</p>
+      <div class="card">
+        <p class="sub">매일 전화 시간</p>
+        <div class="timepick">오전 10:00</div>
+      </div>
+      <div class="card">
+        <p class="sub">요일 선택</p>
+        <div class="days">
+          <span class="on">월</span><span class="on">화</span><span class="on">수</span><span class="on">목</span><span class="on">금</span><span>토</span><span>일</span>
+        </div>
+      </div>
+      <div class="card row">
+        <div><p class="s" style="font-size:11px;color:var(--brown-3)">부모님 번호</p><p class="d" style="font-size:14px;color:var(--brown);font-weight:500">010-1234-5678</p></div>
+        <span class="tag-pill pill-ok"><i class="ti ti-phone-check"></i> 발신번호 표시</span>
+      </div>
+      <button class="btn" style="margin-top:6px;" onclick="completeOnboarding()">설정 완료</button>
+    </div>
+  </section>
+
+  <!-- HOME -->
+  <section class="screen" id="home">
+    <div class="statusbar"><span>9:41</span><span><i class="ti ti-wifi"></i> <i class="ti ti-battery-3"></i></span></div>
+    <div class="header">
+      <div class="brand"><img src="logo-mark.png" alt="리멤버 콜" /><span>Remember Call</span></div>
+      <i class="ti ti-bell bell dot" onclick="go('alert')"></i>
+    </div>
+    <div class="body">
+      <p class="hello">길동님, 안녕하세요</p>
+      <p class="htitle">어머니의 오늘이에요</p>
+      <div class="card card-dark">
+        <p style="font-size:12px;color:#F1E4CB;">이번 주 케어 저니</p>
+        <p style="font-size:16px;font-weight:600;margin-top:3px;">5일 연속 통화 완료</p>
+        <div class="journey-bars"><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span class="done"></span><span></span><span></span></div>
+      </div>
+      <div class="card row">
+        <div><p style="font-size:11px;color:var(--brown-3);">오늘 통화</p><p style="font-size:15px;color:var(--brown);font-weight:500;margin-top:2px;">오전 10:00 · 완료</p></div>
+        <i class="ti ti-circle-check" style="color:var(--caramel-deep);font-size:24px;"></i>
+      </div>
+      <div class="card">
+        <p class="sub">이번 주 인지 현황</p>
+        <div class="metrics">
+          <div class="m"><p>정답률</p><p>82%</p></div>
+          <div class="m"><p>평균 지연</p><p>3.4초</p></div>
+          <div class="m"><p>망설임</p><p>4회</p></div>
+        </div>
+      </div>
+      <div class="card alert-card" onclick="go('alert')">
+        <i class="ti ti-bell-ringing"></i>
+        <p>답변이 평소보다 느려졌어요. 확인해 보세요</p>
+      </div>
+      <div class="card" id="home-highlight">
+        <p class="sub"><i class="ti ti-sparkles"></i> 이번 주 대화 하이라이트</p>
+        <p id="highlight-text" style="font-size:14px;color:var(--brown);line-height:1.65;"></p>
+      </div>
+      <div class="card" id="home-tip">
+        <p class="sub"><i class="ti ti-bulb"></i> 오늘의 케어 팁</p>
+        <p id="tip-text" style="font-size:14px;color:var(--brown-2);line-height:1.7;"></p>
+      </div>
+    </div>
+    <nav class="tabbar">
+      <button class="on" onclick="go('home')"><i class="ti ti-news"></i>홈</button>
+      <button onclick="go('reportlist')"><i class="ti ti-file-text"></i>리포트</button>
+      <button onclick="go('trend')"><i class="ti ti-chart-line"></i>추세</button>
+      <button onclick="go('me')"><i class="ti ti-user"></i>내 정보</button>
+    </nav>
+  </section>
+
+  <!-- REPORT LIST (날짜별) -->
+  <section class="screen" id="reportlist">
+    <div class="statusbar"><span>9:41</span><span><i class="ti ti-wifi"></i> <i class="ti ti-battery-3"></i></span></div>
+    <div class="header">
+      <div class="brand"><img src="logo-mark.png" alt="리멤버 콜" /><span>Remember Call</span></div>
+      <i class="ti ti-bell bell dot" onclick="go('alert')"></i>
+    </div>
+    <div class="body">
+      <p class="htitle">리포트</p>
+      <div class="cal">
+        <div class="cal-head"><i class="ti ti-chevron-left"></i><span>2026년 6월</span><i class="ti ti-chevron-right"></i></div>
+        <div class="cal-grid">
+          <div class="dow">일</div><div class="dow">월</div><div class="dow">화</div><div class="dow">수</div><div class="dow">목</div><div class="dow">금</div><div class="dow">토</div>
+          <div class="day mute">31</div><div class="day has" onclick="openReport('2026-06-01')">1</div><div class="day has" onclick="openReport('2026-06-02')">2</div><div class="day has" onclick="openReport('2026-06-03')">3</div><div class="day has" onclick="openReport('2026-06-04')">4</div><div class="day warn" onclick="openReport('2026-06-05')">5</div><div class="day">6</div>
+          <div class="day">7</div><div class="day has" onclick="openReport('2026-06-08')">8</div><div class="day has" onclick="openReport('2026-06-09')">9</div><div class="day">10</div><div class="day">11</div><div class="day">12</div><div class="day">13</div>
+        </div>
+      </div>
+      <p class="sub">최근 리포트</p>
+      <div class="litem" onclick="openReport('2026-06-05')"><div><p class="d">6월 5일 (목) 통화</p><p class="s">정답률 60% · 답변 지연 증가</p></div><span class="tag-pill pill-warn">주의</span></div>
+      <div class="litem" onclick="openReport('2026-06-04')"><div><p class="d">6월 4일 (수) 통화</p><p class="s">정답률 80% · 양호</p></div><i class="ti ti-chevron-right" style="color:var(--caramel)"></i></div>
+      <div class="litem" onclick="openReport('2026-06-03')"><div><p class="d">6월 3일 (화) 통화</p><p class="s">정답률 100% · 양호</p></div><i class="ti ti-chevron-right" style="color:var(--caramel)"></i></div>
+    </div>
+    <nav class="tabbar">
+      <button onclick="go('home')"><i class="ti ti-news"></i>홈</button>
+      <button class="on" onclick="go('reportlist')"><i class="ti ti-file-text"></i>리포트</button>
+      <button onclick="go('trend')"><i class="ti ti-chart-line"></i>추세</button>
+      <button onclick="go('me')"><i class="ti ti-user"></i>내 정보</button>
+    </nav>
+  </section>
+
+  <!-- REPORT DETAIL -->
+  <section class="screen" id="report">
+    <div class="statusbar"><span>9:41</span><span><i class="ti ti-wifi"></i> <i class="ti ti-battery-3"></i></span></div>
+    <div class="header">
+      <div class="brand"><img src="logo-mark.png" alt="리멤버 콜" /><span>Remember Call</span></div>
+      <i class="ti ti-share-2 bell" style="color:var(--caramel-deep);" onclick="go('share')"></i>
+    </div>
+    <div class="body">
+      <p class="back" onclick="go('reportlist')"><i class="ti ti-arrow-left"></i> 목록으로</p>
+      <p class="hello" id="reportDate">2026.06.01 (월)</p>
+      <p class="htitle">통화 리포트</p>
+      <div class="card metric-line">
+        <p class="sub"><i class="ti ti-clock"></i> 답변 지연 시간</p>
+        <p id="reportDelay" style="font-size:19px;color:var(--brown);font-weight:600;">평균 3.4초</p>
+        <div class="bar"><div id="reportBar" style="width:55%"></div></div>
+      </div>
+      <div class="card">
+        <p class="sub"><i class="ti ti-dots"></i> 망설임 빈도</p>
+        <p id="reportHesitation" style="font-size:19px;color:var(--brown);font-weight:600;">4회</p>
+        <p style="font-size:11px;color:var(--brown-3);margin-top:2px;">"어…", "그게…" 등 단어 인출 지연</p>
+      </div>
+      <div class="card">
+        <p class="sub"><i class="ti ti-check"></i> 정답률</p>
+        <p id="reportAccuracy" style="font-size:19px;color:var(--brown);font-weight:600;">4 / 5 정답</p>
+      </div>
+      <div class="card">
+        <p class="sub"><i class="ti ti-brain"></i> 기억 망각 카테고리</p>
+        <div id="reportCategories" style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+          <span class="tag-pill pill-warn">인명 약함</span>
+          <span class="tag-pill pill-ok">지명 양호</span>
+          <span class="tag-pill pill-ok">날짜 양호</span>
+        </div>
+      </div>
+      <button class="btn" style="margin-top:6px;" onclick="go('share')"><i class="ti ti-share-2"></i> 리포트 공유하기</button>
+    </div>
+    <nav class="tabbar">
+      <button onclick="go('home')"><i class="ti ti-news"></i>홈</button>
+      <button class="on" onclick="go('reportlist')"><i class="ti ti-file-text"></i>리포트</button>
+      <button onclick="go('trend')"><i class="ti ti-chart-line"></i>추세</button>
+      <button onclick="go('me')"><i class="ti ti-user"></i>내 정보</button>
+    </nav>
+  </section>
+
+  <!-- SHARE -->
+  <section class="screen" id="share">
+    <div class="statusbar"><span>9:41</span><span><i class="ti ti-wifi"></i> <i class="ti ti-battery-3"></i></span></div>
+    <div class="body">
+      <p class="back" onclick="go('report')"><i class="ti ti-arrow-left"></i> 뒤로</p>
+      <p class="htitle">리포트 공유</p>
+      <p class="sub">공유 범위</p>
+      <div class="seg"><button class="on">이 리포트</button><button>이번 주 요약</button></div>
+      <p class="sub">공유 방법</p>
+      <div class="share-opt" onclick="alert('링크 공유 (프로토타입)')"><i class="ti ti-link"></i><div><p class="t">링크로 공유</p><p class="d">권한·만료일 설정 가능</p></div></div>
+      <div class="share-opt" onclick="alert('PDF 내보내기 (프로토타입)')"><i class="ti ti-file-type-pdf"></i><div><p class="t">PDF로 내보내기</p><p class="d">의료진 전달용</p></div></div>
+      <div class="share-opt" onclick="alert('가족 초대 (프로토타입)')"><i class="ti ti-users"></i><div><p class="t">가족 초대</p><p class="d">다른 가족도 함께 보기</p></div></div>
+      <div class="card" style="background:var(--cream-2);border:none;display:flex;gap:9px;align-items:center;margin-top:4px;">
+        <i class="ti ti-shield-lock" style="color:var(--caramel-deep)"></i>
+        <p style="font-size:12px;color:var(--brown-2);margin:0;">건강 정보라 공유 시 동의와 만료일이 함께 적용됩니다</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TREND -->
+  <section class="screen" id="trend">
+    <div class="statusbar"><span>9:41</span><span><i class="ti ti-wifi"></i> <i class="ti ti-battery-3"></i></span></div>
+    <div class="header">
+      <div class="brand"><img src="logo-mark.png" alt="리멤버 콜" /><span>Remember Call</span></div>
+      <i class="ti ti-bell bell dot" onclick="go('alert')"></i>
+    </div>
+    <div class="body">
+      <p class="htitle">추세 분석</p>
+      <div class="seg">
+        <button class="on">주간</button>
+        <button>월간</button>
+      </div>
+      <div class="card">
+        <p class="sub">오답률 추세</p>
+        <div class="chart">
+          <div class="col"><div class="b" style="height:30%"></div><small>월</small></div>
+          <div class="col"><div class="b" style="height:25%"></div><small>화</small></div>
+          <div class="col"><div class="b" style="height:45%"></div><small>수</small></div>
+          <div class="col"><div class="b" style="height:40%"></div><small>목</small></div>
+          <div class="col"><div class="b peak" style="height:70%"></div><small>금</small></div>
+        </div>
+      </div>
+      <div class="card row">
+        <div><p style="font-size:11px;color:var(--brown-3);">전월 대비 답변 지연</p><p style="font-size:18px;color:var(--alert);font-weight:600;margin-top:2px;">+31% ▲</p></div>
+        <span class="tag-pill pill-warn">임계치 초과</span>
+      </div>
+    </div>
+    <nav class="tabbar">
+      <button onclick="go('home')"><i class="ti ti-news"></i>홈</button>
+      <button onclick="go('reportlist')"><i class="ti ti-file-text"></i>리포트</button>
+      <button class="on" onclick="go('trend')"><i class="ti ti-chart-line"></i>추세</button>
+      <button onclick="go('me')"><i class="ti ti-user"></i>내 정보</button>
+    </nav>
+  </section>
+
+  <!-- ME / SETTINGS (계정·구독·알림) -->
+  <section class="screen" id="me">
+    <div class="statusbar"><span>9:41</span><span><i class="ti ti-wifi"></i> <i class="ti ti-battery-3"></i></span></div>
+    <div class="header">
+      <div class="brand"><img src="logo-mark.png" alt="리멤버 콜" /><span>Remember Call</span></div>
+      <span style="width:20px"></span>
+    </div>
+    <div class="body">
+      <p class="htitle">내 정보</p>
+      <div class="card row" style="align-items:center;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:44px;height:44px;border-radius:50%;background:var(--cream-2);display:flex;align-items:center;justify-content:center;color:var(--caramel-deep);"><i class="ti ti-user" style="font-size:22px"></i></div>
+          <div><p style="font-size:15px;color:var(--brown);font-weight:600;">홍길동</p><p style="font-size:12px;color:var(--brown-3);">어머니 · 김순자</p></div>
+        </div>
+        <i class="ti ti-chevron-right" style="color:var(--caramel)"></i>
+      </div>
+
+      <div class="card card-dark" style="margin-top:4px;">
+        <div class="row"><div><p style="font-size:12px;color:#F1E4CB;">현재 구독</p><p style="font-size:16px;font-weight:600;margin-top:2px;">연간 구독 · 이용 중</p></div><span style="font-size:11px;background:rgba(251,247,239,.22);padding:3px 12px;border-radius:999px;">다음 결제 7.1</span></div>
+      </div>
+
+      <p class="sub" style="margin-top:8px;">설정</p>
+      <div class="setrow" onclick="go('voice')"><div class="l"><i class="ti ti-microphone"></i> 음성 다시 녹음</div><i class="ti ti-chevron-right" style="color:var(--caramel)"></i></div>
+      <div class="setrow" onclick="go('history')"><div class="l"><i class="ti ti-heart"></i> 가족 추억 관리</div><i class="ti ti-chevron-right" style="color:var(--caramel)"></i></div>
+      <div class="setrow" onclick="go('schedule')"><div class="l"><i class="ti ti-calendar"></i> 통화 스케줄</div><i class="ti ti-chevron-right" style="color:var(--caramel)"></i></div>
+      <div class="setrow" onclick="toggleSwitch(this)"><div class="l"><i class="ti ti-bell"></i> 위험 알림 푸시</div><div class="toggle on"></div></div>
+      <div class="setrow" onclick="alert('약관·개인정보 (프로토타입)')"><div class="l"><i class="ti ti-file-description"></i> 약관·개인정보처리방침</div><i class="ti ti-chevron-right" style="color:var(--caramel)"></i></div>
+      <div class="setrow" onclick="alert('로그아웃 (프로토타입)')"><div class="l"><i class="ti ti-logout"></i> 로그아웃</div></div>
+      <div class="setrow" style="border-color:rgba(181,86,60,.25);margin-top:8px;" onclick="resetOnboarding()"><div class="l" style="color:var(--alert);"><i class="ti ti-refresh" style="color:var(--alert);"></i> 온보딩 다시 보기</div></div>
+    </div>
+    <nav class="tabbar">
+      <button onclick="go('home')"><i class="ti ti-news"></i>홈</button>
+      <button onclick="go('reportlist')"><i class="ti ti-file-text"></i>리포트</button>
+      <button onclick="go('trend')"><i class="ti ti-chart-line"></i>추세</button>
+      <button class="on" onclick="go('me')"><i class="ti ti-user"></i>내 정보</button>
+    </nav>
+  </section>
+
+  <!-- ALERT -->
+  <section class="screen" id="alert">
+    <div class="statusbar"><span>9:41</span><span><i class="ti ti-wifi"></i> <i class="ti ti-battery-3"></i></span></div>
+    <div class="header">
+      <div class="brand"><img src="logo-mark.png" alt="리멤버 콜" /><span>Remember Call</span></div>
+      <span style="width:20px"></span>
+    </div>
+    <div class="body">
+      <p class="back" onclick="go('home')"><i class="ti ti-arrow-left"></i> 홈으로</p>
+      <p class="htitle">위험 알림</p>
+      <div class="card" style="background:var(--alert-bg);border:none;text-align:center;">
+        <i class="ti ti-alert-triangle" style="color:var(--alert);font-size:30px;"></i>
+        <p style="font-size:15px;color:var(--alert-text);font-weight:600;margin:8px 0 3px;">정밀 검진 권장</p>
+        <p style="font-size:12px;color:var(--alert-text);">경도인지장애 가능성 신호가 감지되었어요</p>
+      </div>
+      <div class="card">
+        <p class="sub">감지 근거</p>
+        <p style="font-size:13px;color:var(--brown);line-height:1.7;">• 평균 답변 지연 전월 대비 +31%<br>• 인명 카테고리 3회 연속 오답</p>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn" style="flex:1;" onclick="alert('가까운 병원 찾기 (프로토타입)')"><i class="ti ti-map-pin"></i> 병원 찾기</button>
+        <button class="btn btn-outline" style="flex:1;" onclick="go('share')"><i class="ti ti-share-2"></i> 공유</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEMORY BOTTOM SHEET -->
+  <div class="sheet-backdrop" id="memBackdrop" onclick="closeSheet()">
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <p class="sheet-title" id="sheetTitle">추억 추가</p>
+      <div class="field">
+        <label>카테고리</label>
+        <select id="memCat">
+          <option>출생지</option><option>직장</option><option>자녀 태명</option>
+          <option>기념일</option><option>고향</option><option>학교</option><option>기타</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>내용</label>
+        <input type="text" id="memContent" placeholder="예: 전남 순천" maxlength="40" />
+      </div>
+      <button id="sheetDelBtn" class="del-btn" onclick="deleteMemory()" style="display:none;"><i class="ti ti-trash"></i> 삭제하기</button>
+      <button class="btn" onclick="saveMemory()">저장</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function go(id){
+    document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+    document.getElementById(id).classList.add('active');
+    if(id === 'report'){
+      renderReport();
+    }
+    var b = document.querySelector('#'+id+' .body');
+    if(b) b.scrollTop = 0;
+    window.scrollTo(0,0);
+  }
+
+  function completeOnboarding(){
+    localStorage.setItem('rc_onboarded','true');
+    go('home');
+  }
+  function skipOnboarding(){
+    localStorage.setItem('rc_onboarded','true');
+    go('home');
+  }
+  function resetOnboarding(){
+    localStorage.removeItem('rc_onboarded');
+    go('splash');
+  }
+
+  function toggleSwitch(row){
+    event.stopPropagation();
+    var t = row.querySelector('.toggle');
+    t.classList.toggle('on'); t.classList.toggle('off');
+  }
+
+  var _activeReportDate = '2026-06-01';
+  var _dailyReports = {
+    '2026-06-01': {label:'2026.06.01 (월)', delay:'3.4초', delayPct:55, hesitation:'4회', accuracy:'4 / 5 정답', categories:['인명 약함','지명 양호','날짜 양호']},
+    '2026-06-02': {label:'2026.06.02 (화)', delay:'3.1초', delayPct:50, hesitation:'3회', accuracy:'4 / 5 정답', categories:['날짜 양호','기억력 양호']},
+    '2026-06-03': {label:'2026.06.03 (수)', delay:'2.9초', delayPct:45, hesitation:'2회', accuracy:'5 / 5 정답', categories:['지명 양호','기억력 양호']},
+    '2026-06-04': {label:'2026.06.04 (목)', delay:'3.8초', delayPct:65, hesitation:'5회', accuracy:'4 / 5 정답', categories:['인명 약함','기억력 주의']},
+    '2026-06-05': {label:'2026.06.05 (금)', delay:'4.4초', delayPct:80, hesitation:'6회', accuracy:'3 / 5 정답', categories:['인명 약함','단어 인출 지연']},
+    '2026-06-08': {label:'2026.06.08 (월)', delay:'3.5초', delayPct:58, hesitation:'4회', accuracy:'4 / 5 정답', categories:['지명 양호','날짜 양호']},
+    '2026-06-09': {label:'2026.06.09 (화)', delay:'3.2초', delayPct:52, hesitation:'3회', accuracy:'5 / 5 정답', categories:['기억력 양호','대화 리듬 안정']}
+  };
+
+  function openReport(dateKey){
+    if(_dailyReports[dateKey]){
+      _activeReportDate = dateKey;
+    }
+    go('report');
+  }
+
+  function renderReport(){
+    var report = _dailyReports[_activeReportDate] || _dailyReports['2026-06-01'];
+    document.getElementById('reportDate').textContent = report.label;
+    document.getElementById('reportDelay').textContent = '평균 ' + report.delay;
+    document.getElementById('reportBar').style.width = report.delayPct + '%';
+    document.getElementById('reportHesitation').textContent = report.hesitation;
+    document.getElementById('reportAccuracy').textContent = report.accuracy;
+    var categories = document.getElementById('reportCategories');
+    categories.innerHTML = '';
+    report.categories.forEach(function(text, idx){
+      var span = document.createElement('span');
+      span.className = 'tag-pill ' + (idx === 0 ? 'pill-warn' : 'pill-ok');
+      span.textContent = text;
+      categories.appendChild(span);
+    });
+  }
+
+  function initScheduleDays(){
+    var dayButtons = document.querySelectorAll('#schedule .days span');
+    dayButtons.forEach(function(span){
+      span.addEventListener('click', function(){
+        var selected = document.querySelectorAll('#schedule .days span.on');
+        if(span.classList.contains('on')){
+          if(selected.length <= 1){
+            return;
+          }
+          span.classList.remove('on');
+        } else {
+          span.classList.add('on');
+        }
+      });
+    });
+  }
+
+  /* ---- Memory management ---- */
+  var _editingId = null;
+
+  var _defaults = [
+    {id:1, category:'출생지', content:'전남 순천'},
+    {id:2, category:'직장', content:'○○방직 38년 근무'},
+    {id:3, category:'자녀 태명', content:'큰딸 봄이'},
+    {id:4, category:'기념일', content:'결혼기념일 4월 12일'}
+  ];
+
+  function _loadMems(){
+    var s = localStorage.getItem('rc_memories');
+    return s ? JSON.parse(s) : JSON.parse(JSON.stringify(_defaults));
+  }
+  function _saveMems(list){ localStorage.setItem('rc_memories', JSON.stringify(list)); }
+  function _esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function renderMemories(){
+    var list = _loadMems();
+    var el = document.getElementById('memory-list');
+    el.innerHTML = '';
+    list.forEach(function(m){
+      var row = document.createElement('div');
+      row.className = 'litem';
+      row.innerHTML = '<div><p class="s">'+_esc(m.category)+'</p><p class="d">'+_esc(m.content)+'</p></div>'
+        +'<i class="ti ti-edit" style="color:var(--caramel);cursor:pointer;" data-id="'+m.id+'"></i>';
+      row.querySelector('i').addEventListener('click', function(e){
+        e.stopPropagation();
+        openSheet(m.id);
+      });
+      el.appendChild(row);
+    });
+  }
+
+  function openSheet(id){
+    _editingId = id || null;
+    var catSel = document.getElementById('memCat');
+    var contentInput = document.getElementById('memContent');
+    var delBtn = document.getElementById('sheetDelBtn');
+    document.getElementById('sheetTitle').textContent = id ? '추억 수정' : '추억 추가';
+    if(id){
+      var item = _loadMems().find(function(m){ return m.id === id; });
+      catSel.value = item.category;
+      contentInput.value = item.content;
+      delBtn.style.display = 'flex';
+    } else {
+      catSel.selectedIndex = 0;
+      contentInput.value = '';
+      delBtn.style.display = 'none';
+    }
+    document.getElementById('memBackdrop').classList.add('open');
+    setTimeout(function(){ contentInput.focus(); }, 320);
+  }
+
+  function closeSheet(){
+    document.getElementById('memBackdrop').classList.remove('open');
+  }
+
+  function saveMemory(){
+    var cat = document.getElementById('memCat').value;
+    var content = document.getElementById('memContent').value.trim();
+    if(!content){ document.getElementById('memContent').focus(); return; }
+    var list = _loadMems();
+    if(_editingId){
+      list = list.map(function(m){ return m.id === _editingId ? {id:m.id, category:cat, content:content} : m; });
+    } else {
+      list.push({id:Date.now(), category:cat, content:content});
+    }
+    _saveMems(list);
+    renderMemories();
+    closeSheet();
+  }
+
+  function deleteMemory(){
+    if(!_editingId) return;
+    _saveMems(_loadMems().filter(function(m){ return m.id !== _editingId; }));
+    renderMemories();
+    closeSheet();
+  }
+
+  renderMemories();
+  initScheduleDays();
+
+  /* ---- Initial screen ---- */
+  if(localStorage.getItem('rc_onboarded')==='true'){go('home');}else{go('splash');}
+
+  /* ---- Home cards ---- */
+  var _highlights = [
+    "어머니가 '봄이 결혼식 날 입은 한복 색'을 정확히 기억하셨어요.",
+    "어머니가 처음 만난 날 아버지가 입으셨던 옷 색깔을 또렷이 말씀하셨어요.",
+    "어머니가 고향 시장 이름과 자주 가던 국밥집을 생생하게 기억하셨어요.",
+    "어머니가 결혼기념일 날짜와 그날의 날씨까지 환하게 기억해 내셨어요.",
+    "어머니가 막내가 태어났을 때의 이야기를 세세하게 들려주셨어요.",
+    "어머니가 오래 다니셨던 직장 동료 이름을 막힘없이 떠올리셨어요."
+  ];
+
+  const tips = [
+    "하루 20~30분 가벼운 산책이 뇌에 신선한 산소를 공급해 줄 수 있어요. 날씨 좋은 날 부모님과 짧은 산책을 권해보세요.",
+    "규칙적인 취침·기상 시간을 지키면 수면의 질이 높아져 낮 동안 기억력 유지에 도움이 될 수 있어요.",
+    "하루 중 낮잠은 20~30분 이내가 좋아요. 너무 긴 낮잠은 밤 수면의 질을 낮출 수 있답니다.",
+    "수분을 충분히 섭취하는 습관이 뇌 기능 유지에 도움이 될 수 있어요. 하루 6~8잔의 물을 목표로 해보세요.",
+    "매일 같은 시간에 식사하는 습관이 생체 리듬을 안정시키는 데 도움이 될 수 있어요.",
+    "뜨개질, 그림 그리기처럼 손을 쓰는 새로운 취미를 가볍게 시작해 보는 것도 뇌 자극에 도움이 될 수 있어요.",
+    "독서나 신문 읽기처럼 글을 읽는 시간을 하루에 조금씩 갖는 것이 뇌를 활발하게 유지하는 데 도움이 될 수 있어요.",
+    "화분 가꾸기나 텃밭 돌보기 같은 소소한 취미가 일상에 활력을 불어넣어 줄 수 있어요.",
+    "매일 짧게라도 일기나 메모를 쓰는 습관이 기억을 정리하는 데 도움이 될 수 있어요.",
+    "사람들과 자주 대화하는 것이 인지 건강 유지에 도움이 될 수 있어요. 오늘 리멤버 콜 통화가 그 첫걸음이에요!",
+    "스트레스를 줄이는 것이 중요해요. 명상이나 심호흡 같은 이완 방법을 함께 익혀보세요.",
+    "TV 시청보다 라디오나 오디오북처럼 귀를 기울여야 하는 활동이 집중력에 도움이 될 수 있어요.",
+    "주변을 정리 정돈해 두면 물건을 찾는 스트레스를 줄이고 일상을 편안하게 유지하는 데 도움이 돼요.",
+    "요리, 바느질, 악기 연주 등 손가락을 많이 쓰는 활동이 뇌와 손의 협응 능력 유지에 도움이 될 수 있어요.",
+    "친구나 이웃과 자주 만나는 사교 활동이 정서 건강과 인지 기능 유지에 도움이 될 수 있어요.",
+    "매일 아침 달력으로 오늘 날짜와 할 일을 확인하는 습관이 시간 감각 유지에 도움이 될 수 있어요.",
+    "계단을 이용하거나 조금 더 걷는 등 일상 속 가벼운 신체 활동을 늘려보세요.",
+    "음악을 들으면서 가볍게 몸을 움직이거나 흥얼거리는 것도 즐거운 뇌 자극이 될 수 있어요.",
+    "밝고 안전한 환경에서 생활하는 것이 낙상 예방과 심리적 안정에 모두 도움이 돼요.",
+    "무리하지 않는 수준의 체조나 스트레칭부터 시작하는 규칙적인 운동이 뇌 건강에 도움이 될 수 있어요.",
+    "잠들기 전 스마트폰 사용을 줄이면 수면의 질이 높아질 수 있어요. 취침 1시간 전부터는 화면을 멀리해보세요.",
+    "하루를 돌아보며 감사한 일 한 가지를 떠올리는 루틴이 정서적 안정에 도움이 될 수 있어요.",
+    "매일 한 가지 작은 목표를 세우고 달성하는 경험이 성취감과 인지 기능 유지에 도움이 될 수 있어요.",
+    "외출 후 손씻기, 약 복용 등 일상적인 루틴을 정해두면 잊지 않고 챙기는 데 도움이 돼요.",
+    "가끔 예전에 좋아하던 음식이나 냄새를 경험하면 기억을 생생하게 되살리는 데 도움이 될 수 있어요.",
+    "호두나 아몬드 같은 견과류에는 오메가-3와 비타민 E가 들어 있어요. 하루 한 줌 정도 간식으로 드셔보세요.",
+    "고등어·연어 같은 등푸른 생선에 풍부한 DHA가 뇌 건강에 도움이 될 수 있어요. 일주일에 두세 번 드셔보세요.",
+    "블루베리·딸기 같은 베리류에는 항산화 성분이 풍부해요. 작은 양이라도 꾸준히 챙겨보세요.",
+    "시금치·브로콜리 같은 녹황색 채소에는 엽산과 비타민 K가 들어 있어 뇌 건강에 도움이 될 수 있어요.",
+    "달걀에는 콜린이 풍부해 기억력 지원에 도움이 될 수 있어요. 매일 한두 개 드시는 것도 좋아요.",
+    "강황에 들어 있는 커큐민 성분이 뇌 건강에 도움이 될 수 있다고 알려져 있어요. 카레 요리를 가끔 즐겨보세요.",
+    "녹차에 들어 있는 성분이 집중력에 도움이 될 수 있어요. 하루 1~2잔 정도가 적당해요.",
+    "올리브 오일은 건강한 불포화 지방을 포함하고 있어요. 나물이나 샐러드에 조금 뿌려 드셔보세요.",
+    "카카오 함량 70% 이상의 다크 초콜릿에는 항산화 성분이 들어 있어요. 소량씩 즐기면 좋을 수 있어요.",
+    "두부·된장·청국장 같은 콩류 식품에는 뇌 건강에 도움이 될 수 있는 이소플라본이 들어 있어요.",
+    "현미·귀리 같은 통곡물은 혈당을 안정시켜 뇌에 고른 에너지를 공급하는 데 도움이 될 수 있어요.",
+    "아보카도는 건강한 불포화 지방이 풍부해요. 빵이나 샐러드에 조금씩 곁들여 보세요.",
+    "비타민 D는 뼈 건강뿐 아니라 뇌 기능과도 연관이 있어요. 날씨 좋은 날 짧게 햇볕을 쬐는 것도 좋아요.",
+    "포도 껍질에 있는 항산화 성분이 뇌 건강에 도움이 될 수 있어요. 포도를 껍질째 드셔보세요.",
+    "과일과 채소는 다양한 색깔로 골고루 드시는 게 좋아요. 색이 다양할수록 다양한 영양소를 섭취할 수 있어요.",
+    "마늘에는 알리신이라는 성분이 들어 있어 혈액 순환에 도움이 될 수 있어요.",
+    "토마토에 풍부한 리코펜은 항산화 작용을 해요. 조리해서 드시면 흡수에 도움이 될 수 있어요.",
+    "아침을 챙겨 드시면 오전 내내 뇌 활동에 도움이 될 수 있어요. 식사를 거르지 않는 것이 중요해요.",
+    "김치·요구르트 같은 발효식품이 장 건강을 돕고, 장 건강이 뇌 건강과 연결될 수 있어요.",
+    "견과류를 많이 쓰는 전통 식혜나 약식도 영양이 풍부하답니다. 전통 식품을 즐겨보세요.",
+    "이것저것 골고루 드시는 균형 잡힌 식사가 가장 중요해요. 특정 음식보다 다양하게 드세요.",
+    "식사 시간을 천천히, 꼭꼭 씹으며 즐기면 소화에도 좋고 과식을 방지하는 데도 도움이 될 수 있어요.",
+    "가공식품이나 달고 기름진 음식은 줄이고 신선한 재료로 만든 음식을 드시는 것이 도움이 될 수 있어요.",
+    "식사 때 채소를 먼저 먹고 탄수화물을 나중에 먹는 순서만 바꿔도 혈당 변화를 완만하게 하는 데 도움이 될 수 있어요.",
+    "통화할 때 '오늘 날씨 어때요?' 같은 일상적인 질문으로 가볍게 시작하면 대화가 자연스럽게 이어질 수 있어요.",
+    "'네/아니요'로 끝나는 질문보다 '요즘 어떻게 지내세요?'처럼 이야기를 끌어낼 수 있는 열린 질문이 도움이 될 수 있어요.",
+    "부모님이 하시는 말씀을 중간에 끊지 않고 끝까지 들어드리면 더 편안하게 대화하실 수 있어요.",
+    "오래된 추억이나 젊은 시절 이야기를 여쭤보면 부모님이 즐겁게 이야기를 풀어나가실 수 있어요.",
+    "대화 중 잘 기억 못하시는 것이 있어도 자연스럽게 넘어가 주세요. 지적보다 공감이 더 도움이 될 수 있어요.",
+    "오늘 드신 음식이나 본 TV 프로그램처럼 구체적인 일상을 물어보면 기억을 떠올리는 데 도움이 될 수 있어요.",
+    "통화 중 칭찬을 자주 해드리세요. '잘 기억하시네요'라는 말이 부모님께 큰 힘이 될 수 있어요.",
+    "가족 이야기, 손자·손녀 이야기를 나누면 부모님이 정서적으로 연결감을 느끼시는 데 도움이 될 수 있어요.",
+    "통화할 때 목소리 톤을 따뜻하고 천천히 유지하면 부모님이 더 편안하게 대화하실 수 있어요.",
+    "매번 통화할 때 비슷한 인사 멘트를 쓰면 부모님이 통화 리듬을 익히는 데 도움이 될 수 있어요.",
+    "통화 말미에 '오늘도 건강하게 지내세요'처럼 따뜻한 마무리 인사를 건네면 좋아요.",
+    "부모님이 같은 이야기를 반복하시더라도 처음 듣는 것처럼 반응해 드리면 편안하게 대화하실 수 있어요.",
+    "어릴 때 들었던 이야기를 '그때 말씀하셨던 거 기억나요?'라고 되물으면 즐거운 추억 대화가 열릴 수 있어요.",
+    "계절이나 명절을 주제로 이야기를 나누면 자연스럽게 옛날 기억을 떠올릴 수 있어요.",
+    "부모님이 좋아하시는 주제(텃밭, 요리, 동네 이야기 등)를 미리 생각해두면 대화가 풍성해질 수 있어요.",
+    "부모님의 이야기에 '아, 그래요?', '정말요?' 같은 호응을 자주 해주면 이야기를 더 신나게 하실 수 있어요.",
+    "간단한 수수께끼를 함께 풀어보는 것도 가볍게 뇌를 자극하는 데 도움이 될 수 있어요.",
+    "통화 중 '오늘 가장 기억에 남는 일은 뭐예요?'라고 여쭤보면 하루를 회상하는 좋은 연습이 될 수 있어요.",
+    "부모님이 잘 들으시지 못할 때는 천천히, 조금 더 크게 말씀해 드리되 고함치듯 말하지 않도록 주의하세요.",
+    "통화 후 '다음번에 또 얘기해요'라고 예고하면 기대감을 갖게 해드릴 수 있어요.",
+    "부모님이 젊을 때 하셨던 직업이나 취미에 대해 여쭤보면 자부심과 활기를 느끼실 수 있어요.",
+    "부모님이 하시는 말씀을 요약해 되풀이해 드리면 '잘 듣고 있구나' 하는 느낌을 드릴 수 있어요.",
+    "너무 많은 질문을 한꺼번에 하지 말고 하나씩 천천히 여쭤보는 게 대화를 편안하게 이어가는 데 도움이 돼요.",
+    "매주 같은 요일·시간에 통화하면 부모님이 기다리는 즐거움을 느끼실 수 있어요.",
+    "통화 중 웃음이 나오는 소소한 일상의 재미를 나누면 정서적으로 활력이 될 수 있어요.",
+    "오래된 가족 사진을 함께 보면서 이야기를 나눠보세요. 추억을 되살리는 즐거운 시간이 될 수 있어요.",
+    "부모님이 젊을 때 즐겨 부르던 노래를 함께 흥얼거려 보세요. 음악은 오래된 기억을 생생하게 되살릴 수 있어요.",
+    "화투나 윷놀이 같은 전통 놀이를 함께 해보세요. 규칙을 떠올리고 수를 세는 것이 뇌 자극에 도움이 될 수 있어요.",
+    "같이 요리하거나 레시피를 이야기하는 시간이 감각과 기억을 자극하는 데 도움이 될 수 있어요.",
+    "좋아하시는 드라마나 영화를 함께 보고 이야기를 나눠보세요. 감상을 공유하는 것도 좋은 활동이에요.",
+    "시장이나 마트를 함께 걸으며 장을 보는 것도 몸을 움직이고 사회적 자극을 받을 수 있는 좋은 활동이에요.",
+    "동네 공원을 함께 걸으며 꽃이나 나무 이름을 이야기해 보세요. 자연 속 산책이 기분을 밝게 해줄 수 있어요.",
+    "색칠하기, 그리기 같은 간단한 미술 활동이 집중력과 창의력 자극에 도움이 될 수 있어요.",
+    "스도쿠나 낱말 맞추기 같은 간단한 퍼즐을 함께 풀어보세요. 꾸준한 두뇌 활동이 도움이 될 수 있어요.",
+    "손자·손녀가 쓴 편지나 그림을 보여드리는 것이 큰 기쁨과 활력이 될 수 있어요.",
+    "계절마다 변하는 정원이나 텃밭을 함께 가꾸는 것이 생활에 즐거운 리듬을 줄 수 있어요.",
+    "종이접기나 뜨개질처럼 손을 쓰는 활동이 소근육 운동과 집중력에 도움이 될 수 있어요.",
+    "고향 마을이나 젊은 시절 살던 동네 사진을 함께 보는 것이 따뜻한 추억 대화의 시작이 될 수 있어요.",
+    "함께 신문이나 잡지를 읽고 기사에 대해 의견을 나눠보세요. 사회 참여 감각을 유지하는 데 도움이 될 수 있어요.",
+    "라디오 프로그램을 함께 들으며 이야기를 나누는 것도 좋은 일상의 자극이 될 수 있어요.",
+    "옛날 일기나 편지를 함께 읽어보는 시간이 자신의 삶을 소중히 여기는 데 도움이 될 수 있어요.",
+    "함께 달력에 기념일이나 일정을 표시하고 이야기를 나눠보세요. 시간 감각 유지에 도움이 될 수 있어요.",
+    "좋아하시는 배우나 가수의 옛날 사진을 보며 이야기를 나눠보세요. 즐거운 추억 대화가 이어질 수 있어요.",
+    "함께 간단한 스트레칭이나 체조를 해보세요. 같이하면 더 즐겁고 꾸준히 하기 쉬워요.",
+    "명절이나 생일의 전통 음식을 함께 만들어보세요. 오감을 활용하는 즐거운 시간이 될 수 있어요.",
+    "부모님께 어린 시절 기억나는 동요를 불러달라고 부탁해 보세요. 음악 기억은 오래 남는 경우가 많아요.",
+    "간단한 화분 심기나 씨앗 키우기를 함께 해보세요. 작은 변화를 관찰하는 것이 일상에 기대감을 줄 수 있어요.",
+    "모아둔 사진이나 메모를 함께 정리해 보세요. 추억을 되살리고 성취감을 느낄 수 있는 활동이에요.",
+    "함께 찍은 가족 사진을 앨범이나 액자에 정리해 드리면 부모님이 매일 보며 기쁨을 느끼실 수 있어요.",
+    "가끔 예전에 자주 가던 곳을 함께 방문해 보세요. 장소와 연결된 기억이 생생하게 떠오를 수 있어요."
+  ];
+
+  (function renderHomeCards(){
+    var h = _highlights[Math.floor(Math.random() * _highlights.length)];
+    document.getElementById('highlight-text').textContent = h;
+    var t = tips[Math.floor(Math.random() * tips.length)];
+    document.getElementById('tip-text').textContent = t;
+  })();
+</script>
+</body>
+</html>
