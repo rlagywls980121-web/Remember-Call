@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RememberCall 서비스 미리보기 · 리멤버콜</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Noto+Serif+KR:wght@500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css" />
+
+<style>
+:root{
+  --cream:#F6EFE2; --cream-2:#F0E7D6; --sand:#DBCAAA;
+  --caramel:#C2A275; --caramel-deep:#9E7C4D;
+  --brown:#4A3D2E; --brown-2:#6B5C49; --brown-3:#9E8B72;
+  --white:#FFFFFF; --cta-text:#FBF7EF;
+  --serif-en:'Cormorant Garamond',serif;
+  --serif-ko:'Noto Serif KR',serif;
+  --sans:'Pretendard Variable','Pretendard',-apple-system,sans-serif;
+  --maxw:1120px;
+  --green:#27ae60; --red:#c0392b;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--cream);color:var(--brown);line-height:1.7;-webkit-font-smoothing:antialiased;}
+h1,h2,h3{font-weight:500;line-height:1.3;letter-spacing:-0.01em;}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+a{color:inherit;text-decoration:none;}
+
+/* ── Buttons ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:15px;font-weight:500;padding:13px 26px;border-radius:999px;cursor:pointer;border:1px solid transparent;transition:transform .15s,background .2s;}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--caramel-deep);color:var(--cta-text);}
+.btn-primary:hover:not(:disabled){background:#8a6a3e;}
+.btn-primary:disabled{background:#c0b0a0;cursor:not-allowed;opacity:.7;}
+.btn-ghost{background:transparent;color:var(--brown-2);border-color:rgba(74,61,46,.2);}
+.btn-ghost:hover:not(:disabled){background:rgba(74,61,46,.06);}
+.btn-ghost:disabled{opacity:.5;cursor:not-allowed;}
+.btn-full{width:100%;}
+
+/* ── Header ── */
+header{position:sticky;top:0;z-index:50;background:rgba(246,239,226,.96);backdrop-filter:blur(8px);box-shadow:0 1px 0 rgba(74,61,46,.1);padding:16px 0;}
+.nav{display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:baseline;gap:9px;}
+.logo .en{font-family:var(--serif-en);font-size:22px;font-weight:600;letter-spacing:.5px;color:var(--brown);}
+.logo .ko{font-size:12px;color:var(--brown-3);}
+.back-btn{background:none;border:none;cursor:pointer;font-size:24px;color:var(--brown);padding:8px;display:flex;align-items:center;}
+.back-btn:hover{color:var(--caramel-deep);}
+
+/* ── Hero ── */
+.preview-hero{padding:60px 24px 44px;text-align:center;background:linear-gradient(135deg,var(--cream-2) 0%,var(--cream) 100%);}
+.preview-hero h1{font-family:var(--serif-ko);font-size:clamp(26px,5vw,40px);color:var(--brown);margin-bottom:10px;}
+.preview-hero p{font-size:15px;color:var(--brown-2);max-width:440px;margin:0 auto;line-height:1.8;}
+
+/* ── Step progress ── */
+.step-progress{display:flex;align-items:center;justify-content:center;padding:32px 24px 8px;max-width:480px;margin:0 auto;}
+.step-item{display:flex;flex-direction:column;align-items:center;gap:7px;flex:1;}
+.step-circle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;transition:all .35s;border:2px solid rgba(74,61,46,.15);background:var(--white);color:var(--brown-3);}
+.step-circle.active{background:var(--caramel-deep);color:var(--white);border-color:var(--caramel-deep);box-shadow:0 2px 10px rgba(158,124,77,.3);}
+.step-circle.done{background:var(--caramel);color:var(--white);border-color:var(--caramel);}
+.step-label{font-size:11px;color:var(--brown-3);text-align:center;transition:color .35s;white-space:nowrap;}
+.step-label.active{color:var(--caramel-deep);font-weight:600;}
+.step-label.done{color:var(--caramel);}
+.step-line{flex:0 0 36px;height:2px;background:rgba(74,61,46,.12);margin-bottom:23px;transition:background .35s;}
+.step-line.done{background:var(--caramel);}
+
+/* ── Card ── */
+.preview-main{padding:40px 0 80px;}
+.preview-card{max-width:600px;margin:0 auto;background:var(--white);border:1px solid rgba(74,61,46,.12);border-radius:24px;padding:40px 36px;box-shadow:0 4px 24px rgba(74,61,46,.07);}
+.step-panel{display:none;}
+.step-panel.active{display:block;animation:fadeIn .35s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.panel-title{font-family:var(--serif-ko);font-size:20px;color:var(--brown);margin-bottom:6px;text-align:center;}
+.panel-sub{font-size:13px;color:var(--brown-3);text-align:center;margin-bottom:28px;line-height:1.7;}
+
+/* ── Step 1: Recording ── */
+.script-box{background:var(--cream-2);border-radius:12px;padding:16px 18px;margin-bottom:24px;border-left:3px solid var(--caramel);}
+.script-box .s-label{font-size:11px;color:var(--brown-3);margin-bottom:6px;font-weight:500;letter-spacing:.03em;}
+.script-box p{font-size:14px;color:var(--brown-2);line-height:1.85;}
+
+.record-center{display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:16px;}
+.record-btn-wrap{position:relative;display:flex;align-items:center;justify-content:center;width:80px;height:80px;}
+.record-pulse{position:absolute;inset:0;border-radius:50%;background:rgba(192,57,43,.15);animation:ripple 1.4s ease infinite;display:none;}
+.record-pulse.b{animation-delay:.7s;}
+@keyframes ripple{0%{transform:scale(1);opacity:.8;}100%{transform:scale(1.8);opacity:0;}}
+.record-pulse.active{display:block;}
+.record-btn-main{width:64px;height:64px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:26px;background:var(--caramel-deep);color:var(--white);box-shadow:0 4px 16px rgba(158,124,77,.3);position:relative;z-index:1;transition:all .2s;}
+.record-btn-main.rec{background:var(--red);box-shadow:0 4px 16px rgba(192,57,43,.35);}
+.record-btn-main:hover{transform:scale(1.07);}
+.record-timer{font-size:30px;font-variant-numeric:tabular-nums;font-weight:500;color:var(--brown);letter-spacing:.06em;}
+.record-timer.rec{color:var(--red);}
+.record-hint{font-size:12px;color:var(--brown-3);text-align:center;}
+
+.waveform-wrap{width:100%;height:64px;border-radius:12px;overflow:hidden;background:var(--cream-2);}
+.waveform-wrap canvas{width:100%;height:100%;display:block;}
+
+.playback-box{margin-top:12px;padding:14px 16px;background:var(--cream-2);border-radius:12px;display:none;}
+.playback-box.show{display:block;animation:fadeIn .3s ease;}
+.playback-box .pb-label{font-size:11px;color:var(--brown-3);margin-bottom:8px;font-weight:500;}
+.playback-box audio{width:100%;border-radius:6px;}
+
+.rec-actions{margin-top:22px;display:flex;flex-direction:column;gap:10px;}
+
+/* ── Step 2: Training ── */
+.train-center{display:flex;flex-direction:column;align-items:center;padding:16px 0 8px;gap:28px;}
+.train-wave{display:flex;align-items:center;gap:5px;height:56px;}
+.train-wave span{display:inline-block;width:5px;border-radius:3px;background:var(--caramel-deep);animation:waveBar 1.2s ease infinite;}
+.train-wave span:nth-child(1){height:16px;animation-delay:0s;}
+.train-wave span:nth-child(2){height:28px;animation-delay:.1s;}
+.train-wave span:nth-child(3){height:40px;animation-delay:.2s;}
+.train-wave span:nth-child(4){height:52px;animation-delay:.3s;}
+.train-wave span:nth-child(5){height:56px;animation-delay:.4s;}
+.train-wave span:nth-child(6){height:52px;animation-delay:.5s;}
+.train-wave span:nth-child(7){height:40px;animation-delay:.4s;}
+.train-wave span:nth-child(8){height:28px;animation-delay:.3s;}
+.train-wave span:nth-child(9){height:16px;animation-delay:.2s;}
+@keyframes waveBar{0%,100%{transform:scaleY(.35);opacity:.5;}50%{transform:scaleY(1);opacity:1;}}
+
+.train-steps{width:100%;max-width:300px;}
+.ts-item{display:flex;align-items:center;gap:10px;padding:9px 0;font-size:14px;color:var(--brown-3);transition:color .3s;}
+.ts-item.ts-done{color:var(--brown);}
+.ts-item.ts-active{color:var(--caramel-deep);font-weight:500;}
+.ts-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;background:rgba(74,61,46,.1);color:var(--brown-3);transition:all .3s;}
+.ts-icon.ts-done{background:var(--caramel);color:var(--white);}
+.ts-icon.ts-active{background:var(--caramel-deep);color:var(--white);}
+.mini-spin{width:11px;height:11px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── Step 3: Phone call ── */
+.caller-row{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.caller-label{font-size:14px;color:var(--brown);font-weight:500;white-space:nowrap;}
+.caller-input{flex:1;padding:10px 14px;font-size:15px;font-family:var(--sans);border:1px solid rgba(74,61,46,.2);border-radius:10px;background:var(--cream);color:var(--brown);}
+.caller-input:focus{outline:none;border-color:var(--caramel-deep);background:var(--white);}
+
+.msg-group label{display:block;font-size:14px;color:var(--brown);margin-bottom:8px;font-weight:500;}
+.msg-group textarea{width:100%;padding:14px 16px;font-size:15px;font-family:var(--sans);border:1px solid rgba(74,61,46,.2);border-radius:12px;background:var(--cream);color:var(--brown);resize:vertical;min-height:88px;transition:border .2s;}
+.msg-group textarea:focus{outline:none;border-color:var(--caramel-deep);background:var(--white);}
+
+/* Phone mockup */
+.phone-wrap{display:flex;justify-content:center;margin:24px 0 20px;}
+.phone{width:210px;background:#16161e;border-radius:34px;padding:18px 14px 20px;box-shadow:0 16px 48px rgba(0,0,0,.28),0 0 0 1px rgba(255,255,255,.04);position:relative;}
+.phone-notch{width:56px;height:5px;background:#000;border-radius:3px;margin:0 auto 18px;}
+.phone-screen{text-align:center;}
+.phone-statusbar{font-size:9px;color:rgba(255,255,255,.35);text-align:right;padding-right:4px;margin-bottom:14px;}
+
+.phone-avatar-wrap{position:relative;width:68px;height:68px;margin:0 auto 12px;}
+.phone-avatar{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--caramel) 0%,var(--caramel-deep) 100%);display:flex;align-items:center;justify-content:center;font-size:26px;}
+.ring-1,.ring-2{position:absolute;inset:-8px;border-radius:50%;border:2px solid rgba(39,174,96,.35);opacity:0;pointer-events:none;}
+.ring-1{animation:ringOut 2s ease infinite;}
+.ring-2{animation:ringOut 2s ease .65s infinite;}
+@keyframes ringOut{0%{transform:scale(1);opacity:.7;}100%{transform:scale(1.55);opacity:0;}}
+.phone-avatar.ringing .ring-1,.phone-avatar.ringing .ring-2{opacity:1;}
+
+.phone-name{font-size:17px;color:#fff;font-weight:500;margin-bottom:4px;}
+.phone-status{font-size:12px;color:rgba(255,255,255,.55);margin-bottom:18px;min-height:18px;}
+.phone-status .call-timer{font-variant-numeric:tabular-nums;color:rgba(255,255,255,.7);}
+
+/* Connected waveform bars */
+.call-wave{display:none;justify-content:center;gap:3px;align-items:center;height:20px;margin:-12px 0 10px;}
+.call-wave.show{display:flex;}
+.call-wave span{display:inline-block;width:3px;border-radius:2px;background:rgba(39,174,96,.8);animation:waveBar .9s ease infinite;}
+.call-wave span:nth-child(1){height:6px;animation-delay:0s;}
+.call-wave span:nth-child(2){height:12px;animation-delay:.1s;}
+.call-wave span:nth-child(3){height:18px;animation-delay:.2s;}
+.call-wave span:nth-child(4){height:14px;animation-delay:.3s;}
+.call-wave span:nth-child(5){height:8px;animation-delay:.4s;}
+
+.phone-btns{display:flex;justify-content:center;gap:24px;}
+.phone-btn{width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:transform .15s,opacity .15s;}
+.phone-btn:active{transform:scale(.88);}
+.phone-btn:disabled{opacity:.4;cursor:not-allowed;}
+.phone-btn-end{background:#c0392b;}
+.phone-btn-answer{background:#27ae60;}
+.phone-home{width:64px;height:4px;background:rgba(255,255,255,.18);border-radius:2px;margin:18px auto 0;}
+
+/* Status messages */
+.status-msg{padding:12px 14px;border-radius:10px;margin-top:14px;font-size:13px;display:none;animation:fadeIn .3s ease;}
+.status-msg.show{display:flex;align-items:center;gap:9px;}
+.status-msg.success{background:rgba(39,174,96,.1);color:#1e8449;border-left:3px solid var(--green);}
+.status-msg.error{background:rgba(192,57,43,.1);color:#7b2d22;border-left:3px solid var(--red);}
+.status-msg.info{background:rgba(158,124,77,.08);color:var(--brown-2);border-left:3px solid var(--caramel);}
+.status-msg.loading{background:rgba(158,124,77,.08);color:var(--brown-2);border-left:3px solid var(--caramel);}
+.s-spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(158,124,77,.35);border-top-color:var(--caramel-deep);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0;}
+
+/* Footer */
+footer{background:var(--sand);padding:40px 0 30px;margin-top:0;}
+.foot-logo .en{font-family:var(--serif-en);font-size:22px;font-weight:600;color:var(--brown);letter-spacing:.5px;}
+.foot-tag{font-size:12px;color:var(--brown-2);margin:6px 0 16px;}
+.foot-links{display:flex;gap:20px;flex-wrap:wrap;}
+.foot-links a{font-size:13px;color:var(--brown);}
+.foot-links a:hover{color:var(--caramel-deep);}
+
+@media(max-width:600px){
+  .preview-card{padding:28px 18px;}
+  .step-line{flex:0 0 22px;}
+  .phone{width:190px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <button class="back-btn" onclick="history.back()" aria-label="뒤로가기"><i class="ti ti-arrow-left"></i></button>
+    <a href="index.html" class="logo">
+      <span class="en">RememberCall</span>
+      <span class="ko">리멤버콜</span>
+    </a>
+    <div style="width:40px;"></div>
+  </div>
+</header>
+
+<section class="preview-hero">
+  <div class="wrap">
+    <h1>서비스 미리보기</h1>
+    <p>목소리를 녹음하면 AI가 학습하고,<br>그 목소리로 부모님께 전화를 드립니다.</p>
+  </div>
+</section>
+
+<!-- Step progress -->
+<div class="wrap">
+  <div class="step-progress">
+    <div class="step-item">
+      <div class="step-circle active" id="sc1">1</div>
+      <div class="step-label active" id="sl1">목소리 녹음</div>
+    </div>
+    <div class="step-line" id="ln1"></div>
+    <div class="step-item">
+      <div class="step-circle" id="sc2">2</div>
+      <div class="step-label" id="sl2">AI 학습</div>
+    </div>
+    <div class="step-line" id="ln2"></div>
+    <div class="step-item">
+      <div class="step-circle" id="sc3">3</div>
+      <div class="step-label" id="sl3">전화 미리보기</div>
+    </div>
+  </div>
+</div>
+
+<section class="preview-main">
+  <div class="wrap">
+    <div class="preview-card">
+
+      <!-- ─── STEP 1 ─── -->
+      <div class="step-panel active" id="panel1">
+        <h2 class="panel-title">목소리를 녹음해 주세요</h2>
+        <p class="panel-sub">15초 이상 자연스럽게 말씀해 주세요.<br>AI가 목소리의 특성을 학습합니다.</p>
+
+        <div class="script-box">
+          <div class="s-label">💬 이렇게 말씀해 보세요</div>
+          <p>안녕하세요, 저 [이름]이에요. 오늘 날씨가 참 좋네요. 엄마, 밥은 드셨어요? 다음 주에 꼭 찾아뵐게요. 항상 건강하게 지내세요. 사랑해요.</p>
+        </div>
+
+        <div class="record-center">
+          <div class="record-btn-wrap">
+            <div class="record-pulse" id="rp1"></div>
+            <div class="record-pulse b" id="rp2"></div>
+            <button class="record-btn-main" id="recBtn" onclick="toggleRecord()">
+              <i class="ti ti-microphone" id="recIcon"></i>
+            </button>
+          </div>
+          <div class="record-timer" id="recTimer">00:00</div>
+          <div class="record-hint" id="recHint">버튼을 눌러 녹음을 시작하세요</div>
+        </div>
+
+        <div class="waveform-wrap">
+          <canvas id="waveCanvas"></canvas>
+        </div>
+
+        <div class="playback-box" id="playbackBox">
+          <div class="pb-label">녹음된 음성 확인</div>
+          <audio id="recAudio" controls></audio>
+        </div>
+
+        <div class="rec-actions">
+          <button class="btn btn-primary btn-full" id="trainBtn" onclick="goTrain()" disabled>
+            <i class="ti ti-brain"></i> AI 목소리 학습 시작
+          </button>
+          <button class="btn btn-ghost btn-full" id="reRecBtn" onclick="resetRec()" style="display:none">
+            <i class="ti ti-refresh"></i> 다시 녹음하기
+          </button>
+        </div>
+        <div class="status-msg" id="s1msg"></div>
+      </div>
+
+      <!-- ─── STEP 2 ─── -->
+      <div class="step-panel" id="panel2">
+        <h2 class="panel-title">AI가 목소리를 학습하고 있어요</h2>
+        <p class="panel-sub">목소리의 음색, 억양, 리듬을 분석하고<br>AI 모델에 적용하고 있습니다.</p>
+
+        <div class="train-center">
+          <div class="train-wave">
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <div class="train-steps" id="trainSteps"></div>
+        </div>
+        <div class="status-msg" id="s2msg"></div>
+      </div>
+
+      <!-- ─── STEP 3 ─── -->
+      <div class="step-panel" id="panel3">
+        <h2 class="panel-title">전화 미리보기</h2>
+        <p class="panel-sub">AI가 학습한 목소리로 어떻게 전화를 드리는지<br>직접 들어보세요.</p>
+
+        <div class="caller-row">
+          <span class="caller-label">발신자 이름</span>
+          <input class="caller-input" id="callerName" type="text" placeholder="예) 큰딸, 아들" value="큰딸" maxlength="10" />
+        </div>
+
+        <div class="msg-group" style="margin-bottom:24px;">
+          <label for="callMsg">전할 메시지</label>
+          <textarea id="callMsg" placeholder="부모님께 전할 말을 입력하세요.">엄마, 저 잘 지내고 있어요. 걱정하지 마세요. 다음 주에 꼭 찾아뵐게요. 밥은 꼭 챙겨 드시고, 건강하게 지내세요. 사랑해요.</textarea>
+        </div>
+
+        <div class="phone-wrap">
+          <div class="phone">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <div class="phone-statusbar" id="pStatusBar">9:41</div>
+              <div class="phone-avatar-wrap">
+                <div class="phone-avatar" id="phoneAvatar">🙂</div>
+                <div class="ring-1"></div>
+                <div class="ring-2"></div>
+              </div>
+              <div class="phone-name" id="phoneName">큰딸</div>
+              <div class="phone-status" id="phoneStatus">수신 전화</div>
+              <div class="call-wave" id="callWave">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <div class="phone-btns" id="phoneBtns">
+                <button class="phone-btn phone-btn-end" onclick="endCall()" title="거절">📵</button>
+                <button class="phone-btn phone-btn-answer" onclick="answerCall()" title="받기">📞</button>
+              </div>
+            </div>
+            <div class="phone-home"></div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-full" id="callBtn" onclick="startCall()">
+          <i class="ti ti-phone-call"></i> 전화 걸기
+        </button>
+
+        <div class="status-msg" id="s3msg"></div>
+
+        <div style="margin-top:24px;padding-top:20px;border-top:1px solid rgba(74,61,46,.1);text-align:center;">
+          <p style="font-size:13px;color:var(--brown-3);margin-bottom:12px;">처음부터 다시 체험해 보세요</p>
+          <button class="btn btn-ghost" onclick="resetAll()" style="font-size:13px;padding:9px 22px;">
+            <i class="ti ti-refresh"></i> 처음으로
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-logo"><span class="en">RememberCall</span></div>
+    <p class="foot-tag">리멤버콜 · 기억을 지키는 가장 다정한 연결</p>
+    <div class="foot-links">
+      <a href="index.html">홈으로</a>
+      <a href="index.html#how">서비스 소개</a>
+      <a href="terms.html">이용약관</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── Config ──────────────────────────────────────────────────────────────────
+// 실제 서비스에서는 백엔드 프록시를 통해 API 키를 숨겨야 합니다.
+const API_KEY = 'sk_938b02fcb5328f2e9652b8141d42e7108d654e59bb34d5f5';
+const FALLBACK_VOICE = 'JBFqnCBsd6RMkjVDRZzb';
+const MIN_REC_SECONDS = 10;
+
+// ── State ────────────────────────────────────────────────────────────────────
+let mediaRecorder = null;
+let audioChunks = [];
+let recordedBlob = null;
+let recInterval = null;
+let recSeconds = 0;
+let isRecording = false;
+let audioCtx = null;
+let analyser = null;
+let animId = null;
+let clonedVoiceId = null;
+let callAudio = null;
+let callTimerInterval = null;
+let callSec = 0;
+let phoneState = 'idle'; // idle | fetching | ringing | connected | ended
+
+// ── Step navigation ──────────────────────────────────────────────────────────
+function goStep(n) {
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel' + n).classList.add('active');
+  for (let i = 1; i <= 3; i++) {
+    const sc = document.getElementById('sc' + i);
+    const sl = document.getElementById('sl' + i);
+    sc.className = 'step-circle' + (i < n ? ' done' : i === n ? ' active' : '');
+    sl.className = 'step-label' + (i < n ? ' done' : i === n ? ' active' : '');
+    sc.textContent = i < n ? '✓' : String(i);
+  }
+  for (let i = 1; i <= 2; i++) {
+    document.getElementById('ln' + i).className = 'step-line' + (i < n ? ' done' : '');
+  }
+}
+
+// ── Step 1: Recording ────────────────────────────────────────────────────────
+async function toggleRecord() {
+  if (isRecording) stopRecording();
+  else await startRecording();
+}
+
+async function startRecording() {
+  if (!navigator.mediaDevices) {
+    showMsg('s1msg', '이 브라우저는 녹음을 지원하지 않습니다.', 'error');
+    return;
+  }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    audioCtx.createMediaStreamSource(stream).connect(analyser);
+
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+    mediaRecorder.onstop = onRecStop;
+    mediaRecorder.start(100);
+    isRecording = true;
+    recSeconds = 0;
+
+    setRecUI(true);
+    recInterval = setInterval(() => {
+      recSeconds++;
+      document.getElementById('recTimer').textContent = fmtTime(recSeconds);
+      if (recSeconds >= MIN_REC_SECONDS) document.getElementById('trainBtn').disabled = false;
+    }, 1000);
+    drawWave();
+  } catch {
+    showMsg('s1msg', '마이크 접근이 거부되었습니다. 브라우저 설정을 확인해 주세요.', 'error');
+  }
+}
+
+function stopRecording() {
+  if (!mediaRecorder || mediaRecorder.state === 'inactive') return;
+  mediaRecorder.stop();
+  mediaRecorder.stream.getTracks().forEach(t => t.stop());
+  isRecording = false;
+  clearInterval(recInterval);
+  cancelAnimationFrame(animId);
+  setRecUI(false);
+}
+
+function onRecStop() {
+  recordedBlob = new Blob(audioChunks, { type: 'audio/webm' });
+  document.getElementById('recAudio').src = URL.createObjectURL(recordedBlob);
+  document.getElementById('playbackBox').classList.add('show');
+  document.getElementById('reRecBtn').style.display = 'block';
+  document.getElementById('recHint').textContent = '녹음이 완료되었습니다 ✓';
+  document.getElementById('trainBtn').disabled = false;
+  drawIdleWave();
+}
+
+function setRecUI(recording) {
+  document.getElementById('recBtn').classList.toggle('rec', recording);
+  document.getElementById('recIcon').className = recording ? 'ti ti-square' : 'ti ti-microphone';
+  document.getElementById('rp1').classList.toggle('active', recording);
+  document.getElementById('rp2').classList.toggle('active', recording);
+  document.getElementById('recTimer').classList.toggle('rec', recording);
+  document.getElementById('recHint').textContent = recording
+    ? '녹음 중... 버튼을 눌러 중지하세요'
+    : '버튼을 눌러 녹음을 시작하세요';
+}
+
+function drawWave() {
+  const canvas = document.getElementById('waveCanvas');
+  const ctx = canvas.getContext('2d');
+  resizeCanvas(canvas);
+  const draw = () => {
+    animId = requestAnimationFrame(draw);
+    if (!analyser) return;
+    const buf = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteTimeDomainData(buf);
+    ctx.fillStyle = '#F0E7D6';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = '#9E7C4D';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    const sw = canvas.width / buf.length;
+    buf.forEach((v, i) => {
+      const y = (v / 128) * canvas.height / 2;
+      i === 0 ? ctx.moveTo(0, y) : ctx.lineTo(i * sw, y);
+    });
+    ctx.lineTo(canvas.width, canvas.height / 2);
+    ctx.stroke();
+  };
+  draw();
+}
+
+function drawIdleWave() {
+  const canvas = document.getElementById('waveCanvas');
+  resizeCanvas(canvas);
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#F0E7D6';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = 'rgba(158,124,77,.25)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(0, canvas.height / 2);
+  ctx.lineTo(canvas.width, canvas.height / 2);
+  ctx.stroke();
+}
+
+function resizeCanvas(c) {
+  c.width = c.offsetWidth * devicePixelRatio;
+  c.height = c.offsetHeight * devicePixelRatio;
+  c.getContext('2d').scale(devicePixelRatio, devicePixelRatio);
+}
+
+function resetRec() {
+  if (isRecording) stopRecording();
+  isRecording = false;
+  recordedBlob = null;
+  recSeconds = 0;
+  document.getElementById('recTimer').textContent = '00:00';
+  document.getElementById('recTimer').classList.remove('rec');
+  document.getElementById('recHint').textContent = '버튼을 눌러 녹음을 시작하세요';
+  document.getElementById('recBtn').classList.remove('rec');
+  document.getElementById('recIcon').className = 'ti ti-microphone';
+  document.getElementById('rp1').classList.remove('active');
+  document.getElementById('rp2').classList.remove('active');
+  document.getElementById('playbackBox').classList.remove('show');
+  document.getElementById('reRecBtn').style.display = 'none';
+  document.getElementById('trainBtn').disabled = true;
+  showMsg('s1msg', '', '');
+  drawIdleWave();
+}
+
+async function goTrain() {
+  if (!recordedBlob && recSeconds < MIN_REC_SECONDS) {
+    showMsg('s1msg', '먼저 녹음을 진행해 주세요.', 'error'); return;
+  }
+  document.getElementById('trainBtn').disabled = true;
+  goStep(2);
+  await runTraining();
+  syncCallerName();
+  goStep(3);
+}
+
+// ── Step 2: Training ─────────────────────────────────────────────────────────
+const TSTEPS = ['음성 파일 분석 중...', '음색·억양 패턴 추출 중...', '특성 벡터 계산 중...', 'AI 모델 적용 중...', '학습 완료!'];
+
+async function runTraining() {
+  const list = document.getElementById('trainSteps');
+  list.innerHTML = TSTEPS.map((s, i) =>
+    `<div class="ts-item" id="ts${i}"><div class="ts-icon" id="ti${i}">${i+1}</div><span>${s}</span></div>`
+  ).join('');
+
+  const cloneProm = tryClone();
+
+  for (let i = 0; i < TSTEPS.length; i++) {
+    await sleep(i < 4 ? 750 : 350);
+    document.getElementById('ts' + i).className = 'ts-item ts-active';
+    const icon = document.getElementById('ti' + i);
+    icon.className = 'ts-icon ts-active';
+    icon.innerHTML = '<div class="mini-spin"></div>';
+    await sleep(i < 3 ? 650 : 300);
+    document.getElementById('ts' + i).className = 'ts-item ts-done';
+    icon.className = 'ts-icon ts-done';
+    icon.textContent = '✓';
+  }
+
+  const cloneResult = await cloneProm;
+  clonedVoiceId = cloneResult.id;
+
+  if (clonedVoiceId) {
+    showMsg('s2msg', '✓ 목소리 복제 완료! 녹음하신 목소리로 전화를 드릴게요.', 'success');
+    await sleep(1200);
+  } else {
+    const hint = cloneResult.planError
+      ? '이 API 키는 음성 복제를 지원하지 않습니다. ElevenLabs Starter 플랜 이상이 필요합니다.'
+      : '음성 복제 실패 — ' + cloneResult.error + ' (기본 AI 음성으로 진행합니다)';
+    showMsg('s2msg', '⚠️ ' + hint, 'error');
+    await sleep(2800);
+  }
+}
+
+async function tryClone() {
+  if (!recordedBlob) return { id: null, error: '녹음 데이터 없음' };
+
+  // MediaRecorder가 지원하는 mimeType에 따라 확장자 결정
+  const ext = recordedBlob.type.includes('mp4') ? 'sample.mp4'
+             : recordedBlob.type.includes('ogg') ? 'sample.ogg'
+             : 'sample.webm';
+
+  try {
+    const form = new FormData();
+    form.append('name', 'RC_Preview_' + Date.now());
+    form.append('files', recordedBlob, ext);
+
+    const res = await fetch('https://api.elevenlabs.io/v1/voices/add', {
+      method: 'POST',
+      headers: { 'xi-api-key': API_KEY },
+      body: form
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      return { id: data.voice_id, error: null };
+    }
+
+    let errMsg = `HTTP ${res.status}`;
+    let planError = false;
+    try {
+      const errData = await res.json();
+      errMsg = errData?.detail?.message || errData?.detail || errMsg;
+      // 401/403 또는 플랜 관련 메시지면 planError 표시
+      if (res.status === 401 || res.status === 403 || String(errMsg).toLowerCase().includes('plan')) {
+        planError = true;
+      }
+    } catch {}
+    return { id: null, error: errMsg, planError };
+
+  } catch (e) {
+    return { id: null, error: e.message || '네트워크 오류' };
+  }
+}
+
+// ── Step 3: Phone call ───────────────────────────────────────────────────────
+function syncCallerName() {
+  const n = document.getElementById('callerName').value.trim() || 'AI 가족';
+  document.getElementById('phoneName').textContent = n;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('callerName').addEventListener('input', syncCallerName);
+});
+
+async function startCall() {
+  const msg = document.getElementById('callMsg').value.trim();
+  if (!msg) { showMsg('s3msg', '메시지를 입력해 주세요.', 'error'); return; }
+
+  syncCallerName();
+  phoneState = 'fetching';
+  setCallBtn('<span class="s-spin"></span>', true);
+  setPhoneStatus('음성 생성 중...');
+  showMsg('s3msg', '', '');
+
+  try {
+    const voiceId = clonedVoiceId || FALLBACK_VOICE;
+    const audioUrl = await fetchTTS(msg, voiceId);
+    callAudio = new Audio(audioUrl);
+    callAudio.onended = endCallAuto;
+  } catch {
+    showMsg('s3msg', 'AI 음성 생성에 실패했습니다. 잠시 후 다시 시도해 주세요.', 'error');
+    resetCallUI();
+    return;
+  }
+
+  phoneState = 'ringing';
+  setPhoneStatus('📳 전화가 걸려오고 있어요...');
+  document.getElementById('phoneAvatar').classList.add('ringing');
+  setCallBtn('<i class="ti ti-phone-incoming"></i> 전화 받기', false);
+  document.getElementById('callBtn').onclick = answerCall;
+  renderPhoneBtns('ringing');
+}
+
+function answerCall() {
+  if (phoneState !== 'ringing') return;
+  phoneState = 'connected';
+  document.getElementById('phoneAvatar').classList.remove('ringing');
+  callSec = 0;
+  callTimerInterval = setInterval(() => {
+    callSec++;
+    document.getElementById('phoneStatus').innerHTML =
+      `통화 중 <span class="call-timer">${fmtTime(callSec)}</span>`;
+  }, 1000);
+  document.getElementById('callWave').classList.add('show');
+  setCallBtn('<i class="ti ti-phone-off"></i> 통화 종료', false);
+  document.getElementById('callBtn').onclick = endCall;
+  renderPhoneBtns('connected');
+  if (clonedVoiceId) showMsg('s3msg', '🎙 녹음하신 목소리를 학습한 AI가 메시지를 전달하고 있습니다.', 'info');
+  else showMsg('s3msg', '🎙 AI 음성으로 메시지를 전달하고 있습니다. (실제 서비스에서는 학습된 목소리가 사용됩니다)', 'info');
+  callAudio && callAudio.play().catch(() => {});
+}
+
+function endCall() {
+  clearInterval(callTimerInterval);
+  if (callAudio) { callAudio.pause(); callAudio.currentTime = 0; }
+  callAudio = null;
+  document.getElementById('phoneAvatar').classList.remove('ringing');
+  document.getElementById('callWave').classList.remove('show');
+  phoneState = 'ended';
+  setPhoneStatus('통화 종료');
+  renderPhoneBtns('ended');
+  setCallBtn('<i class="ti ti-phone-call"></i> 다시 걸기', false);
+  document.getElementById('callBtn').onclick = resetCallUI;
+}
+
+function endCallAuto() {
+  clearInterval(callTimerInterval);
+  document.getElementById('callWave').classList.remove('show');
+  setPhoneStatus('통화 종료');
+  renderPhoneBtns('ended');
+  setCallBtn('<i class="ti ti-phone-call"></i> 다시 걸기', false);
+  document.getElementById('callBtn').onclick = resetCallUI;
+  phoneState = 'ended';
+}
+
+function resetCallUI() {
+  phoneState = 'idle';
+  setPhoneStatus('수신 전화');
+  document.getElementById('phoneAvatar').classList.remove('ringing');
+  document.getElementById('callWave').classList.remove('show');
+  renderPhoneBtns('idle');
+  setCallBtn('<i class="ti ti-phone-call"></i> 전화 걸기', false);
+  document.getElementById('callBtn').onclick = startCall;
+  showMsg('s3msg', '', '');
+}
+
+function renderPhoneBtns(state) {
+  const el = document.getElementById('phoneBtns');
+  if (state === 'idle') {
+    el.innerHTML = `<button class="phone-btn phone-btn-end" onclick="endCall()">📵</button>
+                    <button class="phone-btn phone-btn-answer" onclick="answerCall()">📞</button>`;
+  } else if (state === 'ringing') {
+    el.innerHTML = `<button class="phone-btn phone-btn-end" onclick="endCall()">📵</button>
+                    <button class="phone-btn phone-btn-answer" onclick="answerCall()">📞</button>`;
+  } else if (state === 'connected') {
+    el.innerHTML = `<button class="phone-btn phone-btn-end" style="width:52px;height:52px;font-size:22px;" onclick="endCall()">📵</button>`;
+  } else {
+    el.innerHTML = '';
+  }
+}
+
+function setCallBtn(html, disabled) {
+  const btn = document.getElementById('callBtn');
+  btn.innerHTML = html;
+  btn.disabled = disabled;
+}
+
+function setPhoneStatus(txt) {
+  document.getElementById('phoneStatus').textContent = txt;
+}
+
+async function fetchTTS(text, voiceId) {
+  const res = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + voiceId, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'xi-api-key': API_KEY },
+    body: JSON.stringify({
+      text,
+      model_id: 'eleven_multilingual_v2',
+      voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+    })
+  });
+  if (!res.ok) throw new Error('TTS ' + res.status);
+  return URL.createObjectURL(await res.blob());
+}
+
+// ── Reset all ────────────────────────────────────────────────────────────────
+function resetAll() {
+  clearInterval(callTimerInterval);
+  if (callAudio) { callAudio.pause(); callAudio = null; }
+  clonedVoiceId = null;
+  resetRec();
+  resetCallUI();
+  goStep(1);
+}
+
+// ── Utils ────────────────────────────────────────────────────────────────────
+function fmtTime(s) {
+  return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function showMsg(id, html, type) {
+  const el = document.getElementById(id);
+  if (!html) { el.className = 'status-msg'; return; }
+  el.innerHTML = html;
+  el.className = 'status-msg show ' + type;
+  if (type !== 'loading' && type !== 'info') setTimeout(() => el.classList.remove('show'), 7000);
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => { drawIdleWave(); syncCallerName(); });
+window.addEventListener('resize', () => { if (!isRecording) drawIdleWave(); });
+</script>
+
+</body>
+</html>
